@@ -27,10 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Depends on**: Nothing (first phase)
 **Requirements**: FND-01, FND-02, FND-03, FND-04, FND-05, FND-06, FND-07, FND-08, FND-09, FND-10
 **Success Criteria** (what must be TRUE):
-  1. User sees the murmur app launch from a signed build on a physical iPhone and a physical Android phone, with the correct bundle ID and a placeholder icon and splash
+  1. User sees the murmur app launch from a signed debug build on a physical Android phone, with the correct bundle ID `dev.jmclaughlin.murmur`, display name `Murmur`, and a placeholder icon and splash. iOS physical-device install is superseded by Phase 1 D-05/D-06 and deferred to Phase 4 — the Phase 1 iOS deliverable is an unsigned `.xcarchive` from the `workflow_dispatch` CI job, not a device install.
   2. User can navigate between Library, Reader, and Settings placeholder screens via go_router, and hot reload preserves Riverpod state
   3. User can switch between light, sepia, dark, and OLED-black reader themes in the placeholder Settings and see the app chrome follow the system theme by default
-  4. On every push to main, CI produces a signed Android AAB and an iOS IPA that install successfully on a physical device
+  4. On every push to main, CI produces a signed debug Android AAB that is downloadable as a workflow artifact and installable on a physical Android device via bundletool. iOS CI is scaffolded as a manual `workflow_dispatch` job producing an unsigned `.xcarchive` — the full "signed IPA on every push" wording is restored in Phase 4 when Apple Developer Program enrollment lands.
   5. When a thrown exception occurs anywhere in the app, the error is written to an on-device crash log file (no network, no third-party SDK) that can later be surfaced in Settings
 **Plans**: 9 plans (5 waves)
 **Plans**:

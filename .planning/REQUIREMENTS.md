@@ -16,10 +16,10 @@ Scaffolding and compliance groundwork that must land in Phase 1 so later phases 
 - [ ] **FND-03**: Riverpod provider scope is installed at the app root and survives hot reload
 - [ ] **FND-04**: Drift database initializes on first launch with schema versioning wired up for future migrations
 - [ ] **FND-05**: Light, sepia, dark, and OLED-black themes are defined and follow the system theme by default
-- [ ] **FND-06**: Reader font assets are bundled and loadable (3–4 curated font families)
+- [ ] **FND-06** (amended per Phase 1 D-21): Reader font assets are bundled and loadable — **2 curated serif families: Literata and Merriweather**, Regular (400) + Bold (700) weights each, OFL-licensed, bundled as .ttf under `assets/fonts/`. No sans-serif in v1. (Original wording: "3–4 curated font families.")
 - [ ] **FND-07**: iOS Info.plist declares `UIBackgroundModes: audio`, `UIFileSharingEnabled`, `LSSupportsOpeningDocumentsInPlace`, EPUB `CFBundleDocumentTypes`, and `ITSAppUsesNonExemptEncryption=false`
 - [ ] **FND-08**: Android manifest declares `FOREGROUND_SERVICE_MEDIA_PLAYBACK` and `READ_MEDIA_*` permissions appropriate to the target SDK
-- [ ] **FND-09**: CI (GitHub Actions) builds signed debug Android AAB and iOS IPA on every push to main
+- [ ] **FND-09** (amended per Phase 1 D-06): CI (GitHub Actions) builds a signed debug Android AAB on every push to main using a committed debug keystore, and provides a `workflow_dispatch`-only iOS scaffold job that runs `flutter build ios --no-codesign` on `macos-14` and uploads the resulting `.xcarchive` as a workflow artifact. Full FND-09 wording ("signed Android AAB and iOS IPA on every push") is restored in Phase 4 once Apple Developer Program enrollment lands. Original wording: "CI builds signed debug Android AAB and iOS IPA on every push to main."
 - [ ] **FND-10**: Local-only crash logging writes errors to an on-device log file (no Sentry, no Firebase, no network)
 
 ### Library
