@@ -1,0 +1,53 @@
+---
+phase: 01-scaffold-compliance-foundation
+fixed_at: 2026-04-11T00:00:00Z
+review_path: .planning/phases/01-scaffold-compliance-foundation/01-REVIEW.md
+iteration: 1
+findings_in_scope: 4
+fixed: 4
+skipped: 0
+status: all_fixed
+---
+
+# Phase 01: Code Review Fix Report
+
+**Fixed at:** 2026-04-11
+**Source review:** .planning/phases/01-scaffold-compliance-foundation/01-REVIEW.md
+**Iteration:** 1
+
+**Summary:**
+- Findings in scope: 4 (1 Critical, 3 Warning)
+- Fixed: 4
+- Skipped: 0
+
+## Fixed Issues
+
+### CR-01: `drift_dev` missing from `pubspec.yaml` — build_runner cannot generate Drift code
+
+**Files modified:** `pubspec.yaml`
+**Commit:** df60ff0
+**Applied fix:** Added `drift_dev: ^2.32.1` to `dev_dependencies` immediately after `build_runner: ^2.4.13`, matching the `drift: ^2.32.1` runtime dependency version as required.
+
+### WR-01: `CrashLogger.logError` has a concurrency hazard — parallel callers can race through `_rotateIfNeeded`
+
+**Files modified:** `lib/core/crash/crash_logger.dart`
+**Commit:** 81ff58a
+**Applied fix:** Added a `Future<void> _pendingWrite = Future.value()` instance field. Refactored `logError` into a thin wrapper that chains onto `_pendingWrite`, and moved the original body into a new private `_writeEntry` method. All writes are now serialized through the future chain, preventing parallel callers from racing through `_rotateIfNeeded` and hitting the double-rename `FileSystemException`.
+
+### WR-02: `test/widget/navigation_test.dart` — temp directory created in `setUpAll` is never deleted
+
+**Files modified:** `test/widget/navigation_test.dart`
+**Commit:** 31f8241
+**Applied fix:** Promoted `tempDocs` from a local variable inside `setUpAll` to a file-level `late Directory _tempDocs`. Added a `tearDownAll` that calls `CrashLogger.resetForTest()` to clear the singleton and deletes the temp directory recursively, preventing accumulation across test runs.
+
+### WR-03: Release build type silently uses debug keystore with no guard
+
+**Files modified:** `android/app/build.gradle.kts`
+**Commit:** e0226fe
+**Applied fix:** Renamed the signing config from `debugCommitted` to `debugForPhase1` in all three locations (create, debug getByName, release getByName). Added a `TODO(Phase 7 QAL-05)` comment and a `DANGER` warning on the release `buildType` making it explicit that uploading this build permanently burns the app identity.
+
+---
+
+_Fixed: 2026-04-11_
+_Fixer: Claude (gsd-code-fixer)_
+_Iteration: 1_
