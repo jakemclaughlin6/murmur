@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+# EXCEPTION: keys/debug.keystore is force-tracked (git add -f) for zero-secrets CI.
+# See android/keys/README.md for rationale. Phase 7 rotates to GitHub Secrets.
+# DO NOT commit any other keystore — this exception applies to debug.keystore only.
