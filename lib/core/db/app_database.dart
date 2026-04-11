@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'schema_versions.dart';
 import 'tables/books_table.dart';
 import 'tables/chapters_table.dart';
 
@@ -8,13 +9,16 @@ part 'app_database.g.dart';
 
 /// Phase 2 schema v2: `books` + `chapters` tables per D-03, D-04, D-05.
 ///
-/// Migration strategy:
+/// Migration strategy (per D-04 — drift_dev `stepByStep` workflow is LOCKED):
 /// - Fresh installs start at schemaVersion=2 via [MigrationStrategy.onCreate]
 ///   calling `m.createAll()`, which picks up both tables.
 /// - v1→v2 upgrades (users who opened Phase 1 builds at schemaVersion=1
-///   with zero user tables) run the generated `stepByStep` handler in
-///   [onUpgrade]. That handler is wired in Task 2 after
-///   `drift_dev schema steps` regenerates `schema_versions.dart`.
+///   with zero user tables) run the generated `stepByStep` handler wired
+///   below. The `from1To2` closure receives the generated [Schema2]
+///   versioned view of the tables so `createTable` sees the schema as it
+///   existed at v2 — not as the current Dart table classes describe it.
+///   This is what protects the migration from schema drift when Phase 3+
+///   bumps to v3, v4, ….
 ///
 /// Database file location: `${appDocumentsDir}/murmur.db`
 /// (handled automatically by `drift_flutter`'s `driftDatabase` helper).
@@ -30,11 +34,22 @@ class AppDatabase extends _$AppDatabase {
         onCreate: (Migrator m) async {
           await m.createAll();
         },
-        onUpgrade: (Migrator m, int from, int to) async {
-          // Task 2 wires `stepByStep(from1To2: ...)` from the generated
-          // `schema_versions.dart` helper. Until that file exists this
-          // stub is a no-op — acceptable because fresh installs go through
-          // `onCreate` and no real users are on schemaVersion=1 yet.
+        onUpgrade: stepByStep(
+          from1To2: (Migrator m, Schema2 schema) async {
+            await m.createTable(schema.books);
+            await m.createTable(schema.chapters);
+          },
+        ),
+        // SQLite ships with foreign-key enforcement disabled by default.
+        // Drift's idiomatic place to turn it on is `beforeOpen` — the
+        // pragma must be re-issued on every connection because it is a
+        // per-connection setting. Without this, the `ON DELETE CASCADE`
+        // declared on `chapters.book_id` is ignored: deleting a book
+        // leaves orphan chapter rows behind, which breaks the Plan 08
+        // persistence guarantee and silently corrupts downstream phases.
+        // Enforcing FKs here is a correctness requirement, not a feature.
+        beforeOpen: (details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
         },
       );
 
