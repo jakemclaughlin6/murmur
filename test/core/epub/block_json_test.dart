@@ -9,7 +9,7 @@ library;
 
 import 'package:murmur/core/epub/block.dart';
 import 'package:murmur/core/epub/block_json.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Block JSON round-trip', () {
@@ -21,7 +21,7 @@ void main() {
     });
 
     test('Heading round-trips with discriminator "heading"', () {
-      const block = Heading(level: 2, text: 'Chapter 1');
+      final block = Heading(level: 2, text: 'Chapter 1');
       final json = block.toJson();
       expect(
         json,
@@ -98,14 +98,14 @@ void main() {
     });
 
     test('blocksToJsonString/blocksFromJsonString round-trip a mixed list', () {
-      const blocks = <Block>[
+      final blocks = <Block>[
         Heading(level: 1, text: 'Title'),
-        Paragraph('First paragraph.'),
-        Blockquote('A quote.'),
-        ListItem(text: 'one', ordered: true),
-        ListItem(text: 'two', ordered: true),
-        ImageBlock(href: 'img.jpg', alt: 'caption'),
-        Paragraph('Closing.'),
+        const Paragraph('First paragraph.'),
+        const Blockquote('A quote.'),
+        const ListItem(text: 'one', ordered: true),
+        const ListItem(text: 'two', ordered: true),
+        const ImageBlock(href: 'img.jpg', alt: 'caption'),
+        const Paragraph('Closing.'),
       ];
       final jsonString = blocksToJsonString(blocks);
       final decoded = blocksFromJsonString(jsonString);
@@ -135,12 +135,12 @@ void main() {
 
     test('Two Headings with the same fields are equal', () {
       expect(
-        const Heading(level: 3, text: 'x'),
-        equals(const Heading(level: 3, text: 'x')),
+        Heading(level: 3, text: 'x'),
+        equals(Heading(level: 3, text: 'x')),
       );
       expect(
-        const Heading(level: 3, text: 'x'),
-        isNot(equals(const Heading(level: 4, text: 'x'))),
+        Heading(level: 3, text: 'x'),
+        isNot(equals(Heading(level: 4, text: 'x'))),
       );
     });
 
