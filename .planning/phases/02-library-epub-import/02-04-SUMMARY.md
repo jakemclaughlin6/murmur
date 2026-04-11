@@ -189,6 +189,7 @@ None — no external service configuration required. The parser is a pure-Dart l
 - The corpus test can wire up `parseEpubInIsolate` against 15 real EPUBs and assert: every book parses without throwing (or throws `DrmDetectedException` for known-DRM titles), every chapter has a non-empty block list OR a matching `ChapterError`, every title is non-empty.
 
 **Known limitations to revisit:**
+- **Cover extraction positive path is untested.** None of the three synthetic fixtures has a cover image, so the `encodeJpg(book.CoverImage)` branch is exercised only by the null-case assertion on `minimal.epub` (which correctly returns `coverBytes == null`). The positive path — `book.CoverImage != null` → JPEG-encoded bytes → `coverMimeType = 'image/jpeg'` — ships on faith. **Action for Plan 02-08 (15-EPUB corpus test):** assert `coverBytes != null` and `coverMimeType == 'image/jpeg'` for at least one corpus EPUB that has a known cover.
 - Cover extraction re-encodes via package:image, which is lossy for originally-PNG covers. If Phase 6 polish surfaces cover quality complaints, extract from the archive manifest directly (requires parsing the OPF to find the `cover-image` property).
 - DOM walker doesn't recurse into `<blockquote>` children — nested block-level content in a quote is flattened to `.text`. The plan's `<action>` block explicitly scoped this as "keep it simple for Phase 2".
 
