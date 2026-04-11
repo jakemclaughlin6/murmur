@@ -71,7 +71,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 8 plans
 - [x] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
 - [x] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
+- [x] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
 - [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
 - [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
 - [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer

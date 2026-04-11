@@ -36,7 +36,7 @@ EPUB import, persistence, and browsing. Responsive for phones + tablets.
 - [ ] **LIB-08**: User can search the library by title or author
 - [ ] **LIB-09**: User can long-press a book to open a context sheet with "Book Info" and "Delete"
 - [ ] **LIB-10**: Empty library state shows an illustration and an "Import your first book" CTA
-- [ ] **LIB-11**: Library state persists across app restarts
+- [x] **LIB-11**: Library state persists across app restarts
 
 ### Reader
 
@@ -198,7 +198,7 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | LIB-08 | Phase 2 | Pending |
 | LIB-09 | Phase 2 | Pending |
 | LIB-10 | Phase 2 | Pending |
-| LIB-11 | Phase 2 | Pending |
+| LIB-11 | Phase 2 | Complete |
 | RDR-01 | Phase 3 | Pending |
 | RDR-02 | Phase 3 | Pending |
 | RDR-03 | Phase 3 | Pending |
