@@ -44,6 +44,34 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- LIB-02 / D-14: accept EPUBs from file browsers via VIEW intents
+                 (Files, Downloads, third-party file managers). Scheme set to
+                 content + file so both SAF URIs and raw file paths resolve. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/epub+zip" />
+            </intent-filter>
+
+            <!-- LIB-02 / D-14: single-file Share target for EPUBs. Triggered
+                 by other apps' "Share → Murmur" action. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/epub+zip" />
+            </intent-filter>
+
+            <!-- LIB-02 / D-14: multi-file Share target. Files app and some
+                 file managers use SEND_MULTIPLE for batch shares. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/epub+zip" />
+            </intent-filter>
         </activity>
 
         <meta-data

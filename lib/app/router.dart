@@ -43,6 +43,18 @@ GoRouter router(Ref ref) {
           ),
         ],
       ),
+      // Top-level /reader/:bookId — sibling to the StatefulShellRoute, NOT
+      // a sub-route of the /reader shell branch. Opening an actual book
+      // should hide the bottom nav (full-screen reader), which a shell
+      // sub-route would not do. Plan 07's book cards will navigate via
+      // `context.go('/reader/$bookId')`.
+      GoRoute(
+        path: '/reader/:bookId',
+        builder: (context, state) {
+          final bookId = int.parse(state.pathParameters['bookId']!);
+          return ReaderScreen(bookId: bookId);
+        },
+      ),
     ],
   );
 }
