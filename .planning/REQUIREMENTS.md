@@ -174,17 +174,100 @@ Explicit exclusions. Reasoning included to prevent scope creep.
 
 ## Traceability
 
-Populated by the roadmapper during roadmap creation. Every v1 requirement must map to exactly one phase. Empty at requirements-definition time.
+Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2026-04-11.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *(to be filled by roadmapper)* | | |
+| FND-01 | Phase 1 | Pending |
+| FND-02 | Phase 1 | Pending |
+| FND-03 | Phase 1 | Pending |
+| FND-04 | Phase 1 | Pending |
+| FND-05 | Phase 1 | Pending |
+| FND-06 | Phase 1 | Pending |
+| FND-07 | Phase 1 | Pending |
+| FND-08 | Phase 1 | Pending |
+| FND-09 | Phase 1 | Pending |
+| FND-10 | Phase 1 | Pending |
+| LIB-01 | Phase 2 | Pending |
+| LIB-02 | Phase 2 | Pending |
+| LIB-03 | Phase 2 | Pending |
+| LIB-04 | Phase 2 | Pending |
+| LIB-05 | Phase 2 | Pending |
+| LIB-06 | Phase 2 | Pending |
+| LIB-07 | Phase 2 | Pending |
+| LIB-08 | Phase 2 | Pending |
+| LIB-09 | Phase 2 | Pending |
+| LIB-10 | Phase 2 | Pending |
+| LIB-11 | Phase 2 | Pending |
+| RDR-01 | Phase 3 | Pending |
+| RDR-02 | Phase 3 | Pending |
+| RDR-03 | Phase 3 | Pending |
+| RDR-04 | Phase 3 | Pending |
+| RDR-05 | Phase 3 | Pending |
+| RDR-06 | Phase 3 | Pending |
+| RDR-07 | Phase 3 | Pending |
+| RDR-08 | Phase 3 | Pending |
+| RDR-09 | Phase 3 | Pending |
+| RDR-10 | Phase 3 | Pending |
+| RDR-11 | Phase 3 | Pending |
+| RDR-12 | Phase 3 | Pending |
+| RDR-13 | Phase 6 | Pending |
+| RDR-14 | Phase 6 | Pending |
+| TTS-01 | Phase 4 | Pending |
+| TTS-02 | Phase 4 | Pending |
+| TTS-03 | Phase 4 | Pending |
+| TTS-04 | Phase 4 | Pending |
+| TTS-05 | Phase 4 | Pending |
+| TTS-06 | Phase 4 | Pending |
+| TTS-07 | Phase 4 | Pending |
+| TTS-08 | Phase 4 | Pending |
+| TTS-09 | Phase 4 | Pending |
+| TTS-10 | Phase 4 | Pending |
+| PBK-01 | Phase 4 | Pending |
+| PBK-02 | Phase 4 | Pending |
+| PBK-03 | Phase 4 | Pending |
+| PBK-04 | Phase 4 | Pending |
+| PBK-05 | Phase 5 | Pending |
+| PBK-06 | Phase 5 | Pending |
+| PBK-07 | Phase 5 | Pending |
+| PBK-08 | Phase 4 | Pending |
+| PBK-09 | Phase 4 | Pending |
+| PBK-10 | Phase 4 | Pending |
+| PBK-11 | Phase 6 | Pending |
+| PBK-12 | Phase 4 | Pending |
+| SET-01 | Phase 6 | Pending |
+| SET-02 | Phase 6 | Pending |
+| SET-03 | Phase 6 | Pending |
+| SET-04 | Phase 6 | Pending |
+| SET-05 | Phase 6 | Pending |
+| ONB-01 | Phase 6 | Pending |
+| ONB-02 | Phase 6 | Pending |
+| QAL-01 | Phase 6 | Pending |
+| QAL-02 | Phase 6 | Pending |
+| QAL-03 | Phase 6 | Pending |
+| QAL-04 | Phase 6 | Pending |
+| QAL-05 | Phase 7 | Pending |
+| QAL-06 | Phase 7 | Pending |
+| QAL-07 | Phase 7 | Pending |
+| QAL-08 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 75 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 75 ⚠️ (expected until roadmapper runs)
+- v1 requirements: 72 total
+- Mapped to phases: 72
+- Unmapped: 0
+
+**Per-phase requirement counts:**
+
+| Phase | Count | Requirements |
+|-------|-------|--------------|
+| Phase 1: Scaffold & Compliance Foundation | 10 | FND-01..10 |
+| Phase 2: Library & EPUB Import | 11 | LIB-01..11 |
+| Phase 3: Reader with Sentence-Span Architecture | 12 | RDR-01..12 |
+| Phase 4: TTS Engine & Playback Foundation | 18 | TTS-01..10, PBK-01, PBK-02, PBK-03, PBK-04, PBK-08, PBK-09, PBK-10, PBK-12 |
+| Phase 5: Sentence Highlighting & Two-Way Sync | 3 | PBK-05, PBK-06, PBK-07 |
+| Phase 6: Polish, Accessibility & Ship Readiness | 14 | RDR-13, RDR-14, PBK-11, SET-01..05, ONB-01, ONB-02, QAL-01..04 |
+| Phase 7: Paid Distribution | 4 | QAL-05, QAL-06, QAL-07, QAL-08 |
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after initial definition*
+*Last updated: 2026-04-11 — traceability populated by roadmapper (72/72 v1 requirements mapped)*
