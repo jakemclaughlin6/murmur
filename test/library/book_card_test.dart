@@ -8,7 +8,6 @@
 /// - D-11: BookCardShimmer for optimistic insert placeholder
 library;
 
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -17,7 +16,6 @@ import 'package:murmur/core/db/app_database.dart';
 import 'package:murmur/core/theme/clay_colors.dart';
 import 'package:murmur/features/library/book_card.dart';
 import 'package:murmur/features/library/book_card_shimmer.dart';
-import 'package:path/path.dart' as p;
 
 /// Minimal 1x1 red PNG — smallest valid image we can load via Image.file.
 /// Source: https://github.com/mathiasbynens/small/blob/master/png-red.png
@@ -61,39 +59,16 @@ Book makeBook({
 Widget _wrap(Widget child) => MaterialApp(
       home: Scaffold(
         body: Center(
-          child: SizedBox(width: 140, height: 240, child: child),
+          // Cover area is 2:3 of the width — at 140 wide that's 210 tall,
+          // + 8 padding + title line + author line. 280 gives generous
+          // headroom so flex overflow errors do not break layout asserts.
+          child: SizedBox(width: 140, height: 280, child: child),
         ),
       ),
     );
 
 void main() {
-  late Directory sandbox;
-
-  setUp(() {
-    sandbox = Directory.systemTemp.createTempSync('murmur_bookcard_test_');
-  });
-
-  tearDown(() {
-    if (sandbox.existsSync()) sandbox.deleteSync(recursive: true);
-  });
-
   group('BookCard — cover art (D-07, D-08)', () {
-    testWidgets('renders Image.file when coverPath is not null',
-        (tester) async {
-      final coverPath = p.join(sandbox.path, 'cover.png');
-      await File(coverPath).writeAsBytes(_onePixelPng);
-      final book = makeBook(coverPath: coverPath);
-
-      await tester.pumpWidget(_wrap(BookCard(book: book)));
-      await tester.pump();
-
-      expect(find.byType(Image), findsOneWidget);
-      final image = tester.widget<Image>(find.byType(Image));
-      expect(image.fit, BoxFit.cover, reason: 'D-07 full-bleed cover');
-      // Fallback icon must NOT be present when cover renders.
-      expect(find.byIcon(Icons.menu_book_outlined), findsNothing);
-    });
-
     testWidgets(
         'renders fallback Container + menu_book_outlined when coverPath is null',
         (tester) async {
@@ -107,8 +82,41 @@ void main() {
       expect(iconFinder, findsOneWidget);
       final icon = tester.widget<Icon>(iconFinder);
       expect(icon.color, ClayColors.textTertiary, reason: 'D-08 icon color');
-      // No Image.file in the fallback path.
+      // No Image widget in the fallback path.
       expect(find.byType(Image), findsNothing);
+    });
+
+    testWidgets(
+        'renders Image with BoxFit.cover when cover is available '
+        '(test seam: MemoryImage override — avoids the Image.file decoder '
+        'hang in widget tests)', (tester) async {
+      // The production path uses `Image.file(File(book.coverPath!))`,
+      // but `FileImage`'s async decode interacts badly with `testWidgets`
+      // and can hang the test binding. BookCard exposes a
+      // `coverImageOverride` seam exactly for this — tests substitute
+      // a `MemoryImage` of a 1x1 PNG so the widget mounts synchronously
+      // while still exercising the `_buildCover` branch that produces
+      // an `Image` with `BoxFit.cover`.
+      final book = makeBook(coverPath: '/does-not-matter.png');
+
+      await tester.pumpWidget(
+        _wrap(
+          BookCard(
+            book: book,
+            coverImageOverride: MemoryImage(_onePixelPng),
+          ),
+        ),
+      );
+      // pumpAndSettle would hang on MemoryImage resolution too — one
+      // frame is enough to materialize the widget tree for findByType.
+      await tester.pump();
+
+      final imageFinder = find.byType(Image);
+      expect(imageFinder, findsOneWidget);
+      final image = tester.widget<Image>(imageFinder);
+      expect(image.fit, BoxFit.cover, reason: 'D-07 full-bleed cover');
+      expect(find.byIcon(Icons.menu_book_outlined), findsNothing,
+          reason: 'fallback icon must be absent when cover is present');
     });
   });
 
