@@ -81,7 +81,7 @@ void main() {
     final sub = container.listen<AsyncValue<LibraryState>>(
       libraryProvider,
       (prev, next) {
-        final value = next.valueOrNull;
+        final value = next.value;
         if (value != null && !completer.isCompleted && predicate(value)) {
           completer.complete(value);
         }
