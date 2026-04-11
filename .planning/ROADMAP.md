@@ -69,7 +69,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. VoiceOver and TalkBack read paragraphs as whole paragraphs (not sentence-by-sentence) because `Semantics` wraps each paragraph block
   5. Tapping the center of the reader toggles immersive mode; reading progress auto-saves on page turn (debounced 2s) and flushes on `AppLifecycleState.paused`
 **Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
+- [x] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
 - [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
 - [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
 - [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper

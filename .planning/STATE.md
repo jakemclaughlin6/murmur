@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (Toolchain & scaffold gate)
-last_updated: "2026-04-11T17:22:27.138Z"
+stopped_at: "Completed 02-01-PLAN.md (Phase 2 unblock: analyzer override + package spikes)"
+last_updated: "2026-04-11T20:38:29.959Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 7
-  completed_phases: 0
-  total_plans: 9
-  completed_plans: 1
-  percent: 11
+  completed_phases: 1
+  total_plans: 17
+  completed_plans: 10
+  percent: 59
 ---
 
 # Project State
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Point murmur at an EPUB and have it read to you — in a natural neural voice, fully offline, without ever creating an account.
-**Current focus:** Phase 01 — scaffold-compliance-foundation
+**Current focus:** Phase 02 — library-epub-import
 
 ## Current Position
 
-Phase: 01 (scaffold-compliance-foundation) — EXECUTING
-Plan: 2 of 9
+Phase: 02 (library-epub-import) — EXECUTING
+Plan: 2 of 8
 Status: Ready to execute
 Last activity: 2026-04-11
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-scaffold-compliance-foundation P01 | ~4 hours | 4 tasks | 72 files |
+| Phase 02-library-epub-import P01 | 25m | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 01-scaffold-compliance-foundation]: flutter create --org dev.jmclaughlin sets bundle IDs automatically — 6 occurrences in iOS pbxproj, no hand-edits needed
 - [Phase 01-scaffold-compliance-foundation]: MISE_DATA_DIR not available as template var in .mise.toml env block — use {{ env.HOME }}/.local/share/mise instead
 - [Phase 01-scaffold-compliance-foundation]: FND-06 amended (D-21): 2 serif families (Literata + Merriweather) not 3-4; FND-09 amended (D-06): Android AAB on push + iOS workflow_dispatch xcarchive
+- [Phase 02-library-epub-import]: Four coordinated dependency_overrides unblock Phase 2: analyzer ^10, dart_style >=3.1.4<3.1.8, win32 ^6 (mobile-only), plus substitution of receive_sharing_intent_plus (discontinued) → receive_sharing_intent ^1.8.1
+- [Phase 02-library-epub-import]: epubx ^4.0.0 spike PASS under Dart 3.11 (minimal EPUB fixture, clean parse); receive_sharing_intent ^1.8.1 spike PASS (imports clean); both research assumptions A2 and A4 resolved, Plan 04 parser and LIB-02 share-intent both proceed as planned
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T17:22:27.135Z
-Stopped at: Completed 01-01-PLAN.md (Toolchain & scaffold gate)
+Last session: 2026-04-11T20:38:29.957Z
+Stopped at: Completed 02-01-PLAN.md (Phase 2 unblock: analyzer override + package spikes)
 Resume file: None
