@@ -10,7 +10,7 @@
 /// - `tester.view.physicalSize` / `devicePixelRatio` to simulate phone
 ///   and tablet viewports; reset with `addTearDown(tester.view.reset)`.
 /// - Feed books directly through `LibraryGrid`'s constructor (bypasses
-///   the provider — Grid is a pure widget taking a List<Book>).
+///   the provider — Grid is a pure widget taking a `List<Book>`).
 /// - `coverImageOverride` is wired for every test BookCard indirectly by
 ///   constructing BookCards with `coverPath: null` so they take the
 ///   fallback branch (no Image.file calls, no async decoder hangs).
@@ -42,10 +42,10 @@ Widget _wrap({
   required WidgetTester tester,
   required List<Book> books,
   required ValueChanged<int> onLongPress,
-  List<Override> overrides = const [],
+  required AppDatabase db,
 }) {
   return ProviderScope(
-    overrides: overrides,
+    overrides: [appDatabaseProvider.overrideWithValue(db)],
     child: MaterialApp(
       home: Scaffold(
         body: CustomScrollView(
@@ -75,8 +75,6 @@ void main() {
     await db.close();
   });
 
-  List<Override> dbOverride() => [appDatabaseProvider.overrideWithValue(db)];
-
   group('LibraryGrid — responsive column count (D-16 / LIB-05)', () {
     testWidgets('phone portrait (shortestSide < 600, taller than wide) '
         '→ 2 columns', (tester) async {
@@ -91,7 +89,7 @@ void main() {
           tester: tester,
           books: books,
           onLongPress: (_) {},
-          overrides: dbOverride(),
+          db: db,
         ),
       );
       await tester.pump();
@@ -114,7 +112,7 @@ void main() {
           tester: tester,
           books: books,
           onLongPress: (_) {},
-          overrides: dbOverride(),
+          db: db,
         ),
       );
       await tester.pump();
@@ -137,7 +135,7 @@ void main() {
           tester: tester,
           books: books,
           onLongPress: (_) {},
-          overrides: dbOverride(),
+          db: db,
         ),
       );
       await tester.pump();
@@ -160,7 +158,7 @@ void main() {
           tester: tester,
           books: books,
           onLongPress: (_) {},
-          overrides: dbOverride(),
+          db: db,
         ),
       );
       await tester.pump();
@@ -178,35 +176,30 @@ void main() {
         (tester) async {
       _setViewport(tester, const Size(400, 800));
 
-      // Seed importProvider with 2 ImportParsing states (overriding the
-      // notifier's initial state directly).
-      final overrides = [
-        ...dbOverride(),
+      final container = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(container.dispose);
+
+      // Push two parsing states into the import notifier BEFORE pumping
+      // so LibraryGrid reads them in its first build.
+      container.read(importProvider.notifier).state = const [
+        ImportParsing('pending1.epub'),
+        ImportParsing('pending2.epub'),
       ];
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
+        UncontrolledProviderScope(
+          container: container,
           child: MaterialApp(
             home: Scaffold(
-              body: Consumer(
-                builder: (context, ref, _) {
-                  // Push two parsing states into the import notifier
-                  // before the first frame so LibraryGrid reads them.
-                  final notifier = ref.read(importProvider.notifier);
-                  notifier.state = const [
-                    ImportParsing('pending1.epub'),
-                    ImportParsing('pending2.epub'),
-                  ];
-                  return CustomScrollView(
-                    slivers: [
-                      LibraryGrid(
-                        books: [_makeBook(1, 'Real Book')],
-                        onLongPress: (_) {},
-                      ),
-                    ],
-                  );
-                },
+              body: CustomScrollView(
+                slivers: [
+                  LibraryGrid(
+                    books: [_makeBook(1, 'Real Book')],
+                    onLongPress: (_) {},
+                  ),
+                ],
               ),
             ),
           ),
@@ -233,7 +226,7 @@ void main() {
           tester: tester,
           books: [book],
           onLongPress: captured.add,
-          overrides: dbOverride(),
+          db: db,
         ),
       );
       await tester.pump();

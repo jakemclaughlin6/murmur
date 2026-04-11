@@ -4,83 +4,86 @@
 /// Claude's Discretion note in 02-CONTEXT sets the debounce window at 300ms.
 ///
 /// Strategy:
-/// - Real in-memory Drift DB + Riverpod `libraryProvider` so the test
-///   asserts the end-to-end wire: typing in the TextField eventually
-///   calls `LibraryNotifier.setSearchQuery`.
-/// - Debounce assertions: pump 100ms (query NOT yet applied) then
-///   pump 250ms more (query IS applied). `pumpAndSettle` would race the
-///   debounce window, so we use discrete `pump(duration)` calls.
+/// - Override `libraryProvider` with a spy notifier that records every
+///   `setSearchQuery` call — avoids touching Drift entirely so the test
+///   is purely about the debounce + clear-button wiring.
+/// - Debounce assertions: pump 100ms (no call yet) vs 350ms (call made).
+///   `pumpAndSettle` would race the debounce window so we use discrete
+///   `pump(duration)` calls.
 library;
 
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:murmur/core/db/app_database.dart';
-import 'package:murmur/core/db/app_database_provider.dart';
 import 'package:murmur/features/library/library_provider.dart';
 import 'package:murmur/features/library/library_search_bar.dart';
 
-Widget _wrap({
-  required AppDatabase db,
-}) =>
-    ProviderScope(
-      overrides: [appDatabaseProvider.overrideWithValue(db)],
+/// A LibraryNotifier subclass that records every setSearchQuery /
+/// setSortMode call and never touches a real database — the search-bar
+/// tests only care about whether the widget invokes the notifier with
+/// the right argument, not about what the notifier then does with it.
+class _SpyLibraryNotifier extends LibraryNotifier {
+  final List<String> searchCalls = [];
+
+  @override
+  Stream<LibraryState> build() {
+    // Immediately emit an empty state; no DB subscription, no streams
+    // hanging across tests (which caused flutter_tester SEGV crashes
+    // when the real Stream<LibraryState> leaked across test boundaries).
+    return Stream.value(
+      const LibraryState(
+        books: [],
+        sortMode: SortMode.recentlyRead,
+        searchQuery: '',
+      ),
+    );
+  }
+
+  @override
+  void setSearchQuery(String query) {
+    searchCalls.add(query);
+  }
+}
+
+Widget _wrap(_SpyLibraryNotifier spy) => ProviderScope(
+      overrides: [libraryProvider.overrideWith(() => spy)],
       child: const MaterialApp(
-        home: Scaffold(
-          body: LibrarySearchBar(),
-        ),
+        home: Scaffold(body: LibrarySearchBar()),
       ),
     );
 
 void main() {
-  late AppDatabase db;
-
-  setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
-  });
-
-  tearDown(() async {
-    await db.close();
-  });
-
   group('LibrarySearchBar — debounce (300ms)', () {
     testWidgets('typing does NOT apply the query within 100ms', (tester) async {
-      await tester.pumpWidget(_wrap(db: db));
+      final spy = _SpyLibraryNotifier();
+      await tester.pumpWidget(_wrap(spy));
       await tester.pump();
 
       await tester.enterText(find.byType(TextField), 'dune');
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Query must still be empty — debounce window has not elapsed.
-      final scope = tester.element(find.byType(LibrarySearchBar));
-      final container = ProviderScope.containerOf(scope);
-      final state = container.read(libraryProvider).value;
-      expect(state?.searchQuery, '',
+      expect(spy.searchCalls, isEmpty,
           reason: 'query must not apply before 300ms debounce elapses');
     });
 
     testWidgets('typing applies the query after 300ms', (tester) async {
-      await tester.pumpWidget(_wrap(db: db));
+      final spy = _SpyLibraryNotifier();
+      await tester.pumpWidget(_wrap(spy));
       await tester.pump();
 
       await tester.enterText(find.byType(TextField), 'dune');
-      // Push past the 300ms debounce window.
       await tester.pump(const Duration(milliseconds: 350));
 
-      final scope = tester.element(find.byType(LibrarySearchBar));
-      final container = ProviderScope.containerOf(scope);
-      final state = container.read(libraryProvider).value;
-      expect(state?.searchQuery, 'dune',
+      expect(spy.searchCalls, ['dune'],
           reason: 'query must be applied to LibraryNotifier after debounce');
     });
 
     testWidgets('rapid typing coalesces into a single final apply',
         (tester) async {
-      await tester.pumpWidget(_wrap(db: db));
+      final spy = _SpyLibraryNotifier();
+      await tester.pumpWidget(_wrap(spy));
       await tester.pump();
 
-      // Three rapid keystrokes well under the debounce window.
       await tester.enterText(find.byType(TextField), 'd');
       await tester.pump(const Duration(milliseconds: 50));
       await tester.enterText(find.byType(TextField), 'du');
@@ -88,16 +91,15 @@ void main() {
       await tester.enterText(find.byType(TextField), 'dune');
       await tester.pump(const Duration(milliseconds: 350));
 
-      final scope = tester.element(find.byType(LibrarySearchBar));
-      final container = ProviderScope.containerOf(scope);
-      final state = container.read(libraryProvider).value;
-      expect(state?.searchQuery, 'dune');
+      // Only the last value should reach the notifier.
+      expect(spy.searchCalls, ['dune']);
     });
   });
 
   group('LibrarySearchBar — clear button', () {
     testWidgets('clear button appears when text is non-empty', (tester) async {
-      await tester.pumpWidget(_wrap(db: db));
+      final spy = _SpyLibraryNotifier();
+      await tester.pumpWidget(_wrap(spy));
       await tester.pump();
 
       // Initially empty — no clear icon.
@@ -112,20 +114,19 @@ void main() {
 
     testWidgets('tapping clear button wipes text and re-applies empty query',
         (tester) async {
-      await tester.pumpWidget(_wrap(db: db));
+      final spy = _SpyLibraryNotifier();
+      await tester.pumpWidget(_wrap(spy));
       await tester.pump();
 
       await tester.enterText(find.byType(TextField), 'dune');
       await tester.pump(const Duration(milliseconds: 350));
-
-      final scope = tester.element(find.byType(LibrarySearchBar));
-      final container = ProviderScope.containerOf(scope);
-      expect(container.read(libraryProvider).value?.searchQuery, 'dune');
+      expect(spy.searchCalls, ['dune']);
 
       await tester.tap(find.byIcon(Icons.clear));
       await tester.pump(const Duration(milliseconds: 350));
 
-      expect(container.read(libraryProvider).value?.searchQuery, '');
+      // The clear path issues one more setSearchQuery('') call.
+      expect(spy.searchCalls, ['dune', '']);
       expect(find.byIcon(Icons.clear), findsNothing);
     });
   });
