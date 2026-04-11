@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-03-PLAN.md (Drift v2 schema + migration)
-last_updated: "2026-04-11T21:00:23.625Z"
+stopped_at: Completed 02-04-PLAN.md (EPUB parser core + DRM detector + isolate wrapper)
+last_updated: "2026-04-11T21:13:47.614Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 17
-  completed_plans: 12
-  percent: 71
+  completed_plans: 13
+  percent: 76
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (library-epub-import) — EXECUTING
-Plan: 4 of 8
+Plan: 5 of 8
 Status: Ready to execute
 Last activity: 2026-04-11
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-library-epub-import P01 | 25m | 3 tasks | 6 files |
 | Phase 02-library-epub-import P02 | 20m | 2 tasks | 16 files |
 | Phase 02-library-epub-import P03 | 25m | 2 tasks | 11 files |
+| Phase 02 P02-04 | ~35m | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 02-library-epub-import]: epubx ^4.0.0 spike PASS under Dart 3.11 (minimal EPUB fixture, clean parse); receive_sharing_intent ^1.8.1 spike PASS (imports clean); both research assumptions A2 and A4 resolved, Plan 04 parser and LIB-02 share-intent both proceed as planned
 - [Phase 02-library-epub-import]: Block IR sealed class with 5 variants (Paragraph/Heading/ImageBlock/Blockquote/ListItem); exhaustive-switch JSON codec with FormatException tampering gate; Heading is the one non-const variant because const + ArgumentError are mutually exclusive in Dart
 - [Phase 02-library-epub-import]: Drift v2 schema landed (books + chapters per D-03/D-05); stepByStep migration wired; PRAGMA foreign_keys=ON in beforeOpen is mandatory for ON DELETE CASCADE to fire
+- [Phase 02]: EPUB parser returns Future<ParseResult> because epubx readBook is async; Isolate.run accepts FutureOr<R> so the isolate wrapper composes cleanly
+- [Phase 02]: lib/core/epub/ is pure Dart with zero package:flutter/* imports so the parser runs under Isolate.run without a TestWidgetsFlutterBinding and is directly unit-testable
+- [Phase 02]: Cover art re-encoded to JPEG via package:image (quality 85) because epubx returns a decoded Image not raw bytes; D-06 writes covers as ${bookId}.jpg anyway so JPEG is the right target
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T21:00:23.622Z
-Stopped at: Completed 02-03-PLAN.md (Drift v2 schema + migration)
+Last session: 2026-04-11T21:13:37.881Z
+Stopped at: Completed 02-04-PLAN.md (EPUB parser core + DRM detector + isolate wrapper)
 Resume file: None
