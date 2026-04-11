@@ -75,19 +75,31 @@ You can point murmur at an EPUB and have it read to you — in a natural neural 
 - State management: Riverpod
 - Routing: go_router
 - Local DB: Drift (SQLite)
-- EPUB parsing: `epub_view` (with a sentence-aware custom renderer, not `flutter_widget_from_html`)
-- TTS: `sherpa_onnx` Flutter bindings running Kokoro-82M (int8 ONNX, ~82MB download + ~3MB bundled voices.bin + ~1KB tokens.txt)
-- Audio: `just_audio` for PCM playback, `audio_service` for background + lock screen
+- EPUB parsing: `epubx` + `package:html` with a custom sentence-span renderer (NOT `epub_view`, which transitively depends on `flutter_html`)
+- TTS: `sherpa_onnx` Flutter bindings running Kokoro-82M int8 ONNX. Corrected bundle math from research: bundle `voices.bin` (~5.5MB) + `tokens.txt` (~1KB) + `espeak-ng-data/` (~1MB, required by sherpa-onnx at runtime); download `model.int8.onnx` (~80MB) on first launch with SHA-256 verification from a pinned k2-fsa GitHub release URL.
+- Audio: `just_audio` via WAV-wrap + file-based `AudioSource.file` (NOT `StreamAudioSource`, which is experimental), `audio_service` for background + lock screen
 
-**Relevant prior context:** Jonathan refined the app spec in this session — we explicitly added a Non-Goals section, committed to sentence-span rendering at Phase 3 (instead of deferring to Phase 5 and paying a rewrite), dropped `flutter_widget_from_html` and `cached_network_image` from the dependency list, and narrowed voice selection from 53 to ~10 curated English voices.
+**Dev environment (no host pollution):**
+Jonathan is developing on Linux (CachyOS) and explicitly does not want Flutter/Dart/Android SDK installed globally on the host. Toolchain is managed via **`mise`** with a project-local `.mise.toml` (or `.tool-versions`) pinning Flutter, Dart, and Android `cmdline-tools` versions. Docker was considered and rejected: emulator-in-Docker needs KVM passthrough, real-device USB debugging needs `--privileged`, and the iOS path doesn't work in containers at all. `mise` achieves the "no host pollution" goal without the container friction that hurts Flutter mobile workflows specifically. Phase 1 will commit the `mise` config and document the setup in the README.
+
+**iOS without a Mac:**
+Jonathan does not currently own a Mac. The roadmap is built assuming iOS development routes through **GitHub Actions macOS runners** (free on public repos, ~$0.08/min private) for CI builds and TestFlight uploads until Phase 4 forces a decision about interactive iOS debugging. Phases 1–3 are iOS-agnostic and work fine in this arrangement. Phase 4 is the decision point — Sherpa-ONNX native linking + `audio_service` iOS quirks are exactly the kind of issues that are painful to debug through CI logs alone. At that point Jonathan will choose one of:
+  1. Rent a cloud Mac mini (Scaleway M1, ~€0.10–0.24/hr) by the week for Phase 4 iOS debugging
+  2. Buy a used Mac mini M1/M2 (~$400–600) if committed to iOS v1
+  3. Defer iOS to v1.1 and ship Play Store only for v1, moving `QAL-06` (iOS App Store upload) from v1 requirements to v2
+
+Until that decision, plan steps should NOT silently assume Mac access exists. `QAL-06` (iOS App Store upload) is the only v1 requirement that genuinely cannot happen without Mac access of some form.
+
+**Relevant prior context:** Jonathan refined the app spec in this session — we explicitly added a Non-Goals section, committed to sentence-span rendering at Phase 3 (instead of deferring to Phase 5 and paying a rewrite), dropped `flutter_widget_from_html`, `epub_view`, and `cached_network_image` from the dependency list, and narrowed voice selection from 53 to ~10 curated English voices. Research then surfaced ~16 cross-cutting conclusions folded into REQUIREMENTS.md and ROADMAP.md.
 
 **User feedback themes:** None yet — app has not shipped. Requirements are hypotheses until validated.
 
 **Known issues to address:**
-- Sherpa-ONNX Flutter bindings are less battle-tested than the C++ API; expect integration friction
-- Sentence splitting at `.`, `!`, `?` is deceptively hard (abbreviations, decimals, ellipses, quoted dialog) — build and test in isolation first
-- EPUB HTML is genuinely messy; the HTML → sentence-span pipeline is the biggest unknown in the whole project
+- Sherpa-ONNX Flutter bindings are young (1.10.42 added Kokoro example, 1.12.31 refactored the Generate API) — pin exact versions and build a TTS smoke-test harness on day 1 of Phase 4
+- Sentence splitting is deceptively hard (24+ edge-case categories per PITFALLS research) — build a 500+ fixture regression suite in isolation before Phase 4
+- EPUB HTML is genuinely messy; Phase 2 needs an `epubx` Dart-compatibility spike before parser code is written
 - iOS paid-app review can be slower than Android; factor in for release timing
+- iOS development is remote-only via CI until the Phase 4 Mac-access decision is made
 
 ## Constraints
 
@@ -100,7 +112,9 @@ You can point murmur at an EPUB and have it read to you — in a natural neural 
 - **Form factor**: Android + iOS, phones and tablets. Phones are first-class, not a "fallback" layout. No desktop.
 - **Team size**: Solo developer (Jonathan) with AI-assisted coding. Scope must fit that cadence.
 - **Performance**: 60fps reader scroll on mid-range phones and tablets; TTS sentence-start latency < 300ms; no memory leaks over 2-hour sessions with 1000-page books.
-- **Reader architecture**: The reader must treat sentences as a first-class data structure from Phase 3. No HTML-opaque renderers (`flutter_widget_from_html`, `flutter_html`, webview). This is a commitment, not a preference — see Key Decisions.
+- **Reader architecture**: The reader must treat sentences as a first-class data structure from Phase 3. No HTML-opaque renderers (`flutter_widget_from_html`, `flutter_html`, `epub_view`, webview). This is a commitment, not a preference — see Key Decisions.
+- **Dev environment**: Flutter / Dart / Android SDK must NOT be installed globally on the Linux host. All toolchain lives under a project-local `mise` config. Docker is explicitly rejected as the sandbox. See Context → Dev environment for rationale.
+- **Apple hardware**: No Mac currently available. iOS builds route through CI (GitHub Actions macOS runners) for Phases 1–3. Phase 4 forces a Mac-access decision before iOS-specific debugging begins. Plans must not silently assume a Mac exists.
 
 ## Key Decisions
 
@@ -116,6 +130,8 @@ You can point murmur at an EPUB and have it read to you — in a natural neural 
 | Custom sentence-span reader renderer from Phase 3 (not `flutter_widget_from_html`) | `flutter_widget_from_html` cannot expose per-sentence spans; deferring this decision to Phase 5 would force a full reader rewrite when sentence highlighting lands | — Pending |
 | Phones and tablets are both first-class form factors | "Phone fallback" layouts signal an afterthought; target audience reads on whichever device is in hand | — Pending |
 | Local-only crash log (no Sentry, no Firebase, no network error reporting) | Telemetry-over-the-wire contradicts the privacy promise; local log + manual share preserves user agency | — Pending |
+| `mise` for per-project Flutter toolchain (not Docker, not global install) | Jonathan explicitly wants no host pollution on the Linux dev machine. Docker was considered and rejected — KVM-in-container for emulators and `--privileged` for USB ADB are friction that mise avoids entirely while still isolating deps per project | — Pending |
+| No Mac yet — iOS routes through GitHub Actions CI until Phase 4 decision point | Jonathan does not currently own a Mac. Phases 1–3 are iOS-agnostic so this doesn't block progress. Phase 4 is where Sherpa-ONNX + `audio_service` iOS-specific debugging becomes painful enough to need interactive Xcode access; decision (cloud Mac / buy Mac mini / defer iOS to v1.1) deferred until Phase 4 is imminent. `QAL-06` (iOS Store upload) is the only v1 requirement at risk of moving to v1.1 | — Pending |
 
 ## Evolution
 
@@ -135,4 +151,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 after initialization*
+*Last updated: 2026-04-11 after adding dev environment + no-Mac constraints*
