@@ -18,17 +18,37 @@ dependencies:
   shared_preferences: ^2.3.0
   path_provider: ^2.1.5
   package_info_plus: ^10.0.0
+  epubx: ^4.0.0
+  file_picker: ^11.0.2
+  html: ^0.15.5
+  # Research A2 invalidated: receive_sharing_intent_plus ^1.6.0 does not exist
+  # (latest is 1.0.1 and the package is marked discontinued on pub.dev, replaced by
+  # receive_sharing_intent). Switched to the maintained original package.
+  receive_sharing_intent: ^1.8.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.13
-  # drift_dev intentionally omitted from Phase 1 — analyzer conflict with riverpod_generator:
-  # drift_dev requires analyzer >=10, riverpod_generator ^4.0.3 requires analyzer ^9.
-  # app_database.g.dart is hand-crafted (zero-table schema). Resolve in Phase 2.
+  drift_dev: ^2.32.1
   riverpod_generator: ^4.0.3
   riverpod_lint: ^3.0.0
   flutter_lints: ^5.0.0
+
+# Phase 2 dependency overrides:
+#
+# 1. analyzer ^10.0.0 — resolves drift_dev 2.32.1 (requires analyzer >=10) vs
+#    riverpod_generator 4.0.3 (pins analyzer ^9) conflict. riverpod_generator
+#    uses a subset of analyzer's public API unchanged between v9 and v10, so the
+#    override is empirically safe. See riverpod GH #4393, #4684, #4698, #4716.
+#
+# 2. win32 ^6.0.0 — file_picker 11.0.2 pins win32 ^5.9.0 but package_info_plus
+#    10.0.0 requires win32 ^6.0.0. murmur targets Android + iOS only (no desktop
+#    per PROJECT.md constraints), so the Windows-only win32 code path is never
+#    executed at runtime and the override is safe.
+dependency_overrides:
+  analyzer: ^10.0.0
+  win32: ^6.0.0
 
 flutter:
   uses-material-design: true
