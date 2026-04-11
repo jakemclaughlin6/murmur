@@ -26,8 +26,8 @@ Scaffolding and compliance groundwork that must land in Phase 1 so later phases 
 
 EPUB import, persistence, and browsing. Responsive for phones + tablets.
 
-- [ ] **LIB-01**: User can import one or more DRM-free EPUB files via the system file picker (batch import)
-- [ ] **LIB-02**: User can import an EPUB via Share / Open-in intent from another app (iOS document provider + Android `ACTION_VIEW`)
+- [x] **LIB-01**: User can import one or more DRM-free EPUB files via the system file picker (batch import)
+- [x] **LIB-02**: User can import an EPUB via Share / Open-in intent from another app (iOS document provider + Android `ACTION_VIEW`)
 - [x] **LIB-03**: Importer parses EPUB metadata (title, author, cover image, chapter list) and persists to Drift DB on a 15-EPUB test corpus without crashes
 - [x] **LIB-04**: Corrupt or DRM'd EPUB import surfaces a friendly snackbar error and leaves the library unchanged
 - [ ] **LIB-05**: User sees a responsive library grid — 2 cols on phone portrait, 3 on phone landscape, 4–6 on tablets
@@ -188,8 +188,8 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | FND-08 | Phase 1 | Pending |
 | FND-09 | Phase 1 | Pending |
 | FND-10 | Phase 1 | Pending |
-| LIB-01 | Phase 2 | Pending |
-| LIB-02 | Phase 2 | Pending |
+| LIB-01 | Phase 2 | Complete |
+| LIB-02 | Phase 2 | Complete |
 | LIB-03 | Phase 2 | Complete |
 | LIB-04 | Phase 2 | Complete |
 | LIB-05 | Phase 2 | Pending |
