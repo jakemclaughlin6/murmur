@@ -32,7 +32,17 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can switch between light, sepia, dark, and OLED-black reader themes in the placeholder Settings and see the app chrome follow the system theme by default
   4. On every push to main, CI produces a signed Android AAB and an iOS IPA that install successfully on a physical device
   5. When a thrown exception occurs anywhere in the app, the error is written to an on-device crash log file (no network, no third-party SDK) that can later be surfaced in Settings
-**Plans**: TBD
+**Plans**: 9 plans (5 waves)
+**Plans**:
+- [ ] 01-01-PLAN.md — Toolchain & scaffold gate (mise + flutter create + amendments)
+- [ ] 01-02-PLAN.md — Dependencies + codegen bootstrap (pubspec + analysis_options)
+- [ ] 01-03-PLAN.md — Android platform config (gradle + keystore + manifest)
+- [ ] 01-04-PLAN.md — iOS platform config (Info.plist + pbxproj + Podfile)
+- [ ] 01-05-PLAN.md — Theme system + fonts (4 ThemeData + Literata/Merriweather)
+- [ ] 01-06-PLAN.md — Drift database v1 (schemaVersion=1, zero tables, schema dump)
+- [ ] 01-07-PLAN.md — Crash logger (JSONL + 1MB rotation + triple-catch helpers)
+- [ ] 01-08-PLAN.md — App shell (main.dart + router + placeholder screens)
+- [ ] 01-09-PLAN.md — CI workflow + README (Android push + iOS workflow_dispatch)
 **UI hint**: yes
 
 ### Phase 2: Library & EPUB Import
