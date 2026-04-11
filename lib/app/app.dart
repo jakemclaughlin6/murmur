@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/murmur_theme_mode.dart';
 import '../core/theme/theme_mode_provider.dart';
+import '../features/library/share_intent_listener.dart';
 import 'router.dart';
 
 class MurmurApp extends ConsumerWidget {
@@ -14,6 +15,14 @@ class MurmurApp extends ConsumerWidget {
     final modeAsync = ref.watch(themeModeControllerProvider);
     final mode = modeAsync.value ?? MurmurThemeMode.system;
     final router = ref.watch(routerProvider);
+
+    // LIB-02 / D-14: kick off the share-intent listener at app startup.
+    // The provider's `build()` drains any initial cold-start share
+    // intent and subscribes to the hot stream; we only need to watch
+    // it here so that the @Riverpod(keepAlive: true) lifecycle actually
+    // instantiates. The result (a `Future<void>`) is intentionally
+    // discarded — the listener publishes state via ImportNotifier.
+    ref.watch(shareIntentListenerProvider);
 
     // For System, Light: light themes follow ThemeMode.system / light.
     // For Dark, OLED: dark themes follow ThemeMode.dark.
