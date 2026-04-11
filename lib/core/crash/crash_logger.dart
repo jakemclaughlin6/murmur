@@ -42,6 +42,9 @@ class CrashLogger {
   final String _osString;
   final String _appVersion;
 
+  /// Serializes concurrent logError calls so _rotateIfNeeded is never racy.
+  Future<void> _pendingWrite = Future.value();
+
   String get filePath => _file.path;
   Future<int> currentSize() async => _file.existsSync() ? _file.length() : 0;
 
@@ -104,11 +107,21 @@ class CrashLogger {
   }
 
   /// Main entry. Writes one JSONL line with the 7 D-07 fields.
+  ///
+  /// Serialized through [_pendingWrite] to prevent a concurrency hazard where
+  /// parallel callers (e.g. FlutterError.onError + PlatformDispatcher.onError)
+  /// both pass the size check in _rotateIfNeeded and then race to rename the
+  /// same file, causing the second rename to throw FileSystemException.
   Future<void> logError(
     Object error,
     StackTrace stack, {
     String level = 'error',
-  }) async {
+  }) {
+    _pendingWrite = _pendingWrite.then((_) => _writeEntry(error, stack, level));
+    return _pendingWrite;
+  }
+
+  Future<void> _writeEntry(Object error, StackTrace stack, String level) async {
     final entry = <String, dynamic>{
       'ts': DateTime.now().toUtc().toIso8601String(),
       'level': level,
