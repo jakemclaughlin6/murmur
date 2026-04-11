@@ -19,6 +19,7 @@ dependencies:
   path_provider: ^2.1.5
   package_info_plus: ^10.0.0
   epubx: ^4.0.0
+  archive: ^3.6.1
   file_picker: ^11.0.2
   html: ^0.15.5
   # Research A2 invalidated: receive_sharing_intent_plus ^1.6.0 does not exist
