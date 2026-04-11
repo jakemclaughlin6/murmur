@@ -1,13 +1,12 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "dev.jmclaughlin.murmur"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,21 +19,31 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "dev.jmclaughlin.murmur"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 24
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("debugCommitted") {
+            storeFile = file("../keys/debug.keystore")
+            storePassword = "murmurdebug"
+            keyAlias = "murmurdebug"
+            keyPassword = "murmurdebug"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debugCommitted")
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Phase 1 uses the committed debug keystore for release too so CI can produce
+            // a "signed debug AAB" with zero secrets plumbing. Phase 7 (QAL-05) replaces
+            // this with an upload keystore from GitHub Secrets. See android/keys/README.md.
+            signingConfig = signingConfigs.getByName("debugCommitted")
         }
     }
 }
