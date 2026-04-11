@@ -25,6 +25,10 @@ dependencies:
   image: ^3.3.0
   file_picker: ^11.0.2
   html: ^0.15.5
+  # path ^1.9 is promoted from transitive to direct because
+  # lib/features/library/import_service.dart uses p.join / p.basename for
+  # destination path construction (T-02-05-02 defense). Also used in tests.
+  path: ^1.9.0
   # Research A2 invalidated: receive_sharing_intent_plus ^1.6.0 does not exist
   # (latest is 1.0.1 and the package is marked discontinued on pub.dev, replaced by
   # receive_sharing_intent). Switched to the maintained original package.

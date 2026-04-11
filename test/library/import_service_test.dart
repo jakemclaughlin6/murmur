@@ -20,7 +20,6 @@ library;
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,64 +53,66 @@ Future<String> _stageFixture(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late Directory _sandbox; // per-test sandbox (source files + app docs dir)
-  late Directory _sourceDir;
-  late Directory _docsDir;
-  late AppDatabase _db;
-  late ProviderContainer _container;
+  late Directory sandbox; // per-test sandbox (source files + app docs dir)
+  late Directory sourceDir;
+  late Directory docsDir;
+  late AppDatabase db;
+  late ProviderContainer container;
 
   setUp(() async {
-    _sandbox = Directory.systemTemp.createTempSync('murmur_import_test_');
-    _sourceDir = Directory(p.join(_sandbox.path, 'src'))..createSync();
-    _docsDir = Directory(p.join(_sandbox.path, 'docs'))..createSync();
-    _db = AppDatabase(NativeDatabase.memory());
-    _container = ProviderContainer(
+    sandbox = Directory.systemTemp.createTempSync('murmur_import_test_');
+    sourceDir = Directory(p.join(sandbox.path, 'src'))..createSync();
+    docsDir = Directory(p.join(sandbox.path, 'docs'))..createSync();
+    db = AppDatabase(NativeDatabase.memory());
+    container = ProviderContainer(
       overrides: [
-        appDatabaseProvider.overrideWithValue(_db),
-        appDocumentsDirProvider.overrideWithValue(_docsDir),
+        appDatabaseProvider.overrideWithValue(db),
+        // appDocumentsDirProvider is @Riverpod(keepAlive: true) Future, so
+        // override with a fresh async closure that resolves to our temp dir.
+        appDocumentsDirProvider.overrideWith((ref) async => docsDir),
       ],
     );
   });
 
   tearDown(() async {
-    _container.dispose();
-    await _db.close();
-    if (_sandbox.existsSync()) {
-      _sandbox.deleteSync(recursive: true);
+    container.dispose();
+    await db.close();
+    if (sandbox.existsSync()) {
+      sandbox.deleteSync(recursive: true);
     }
   });
 
   group('ImportNotifier.importFromPaths — happy path', () {
     test('minimal.epub inserts one row with title and author', () async {
-      final path = await _stageFixture('minimal.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final path = await _stageFixture('minimal.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([path]);
 
-      final states = _container.read(importNotifierProvider);
+      final states = container.read(importProvider);
       expect(states, hasLength(1));
       expect(states.single, isA<ImportSuccess>());
 
-      final books = await _db.select(_db.books).get();
+      final books = await db.select(db.books).get();
       expect(books, hasLength(1));
       expect(books.single.title, 'Minimal Test');
       expect(books.single.author, 'Test Author');
       // file_path must live INSIDE the app docs dir, NOT equal the source
       // path (threat T-02-05-02 — path traversal defense).
       expect(
-        p.isWithin(_docsDir.path, books.single.filePath),
+        p.isWithin(docsDir.path, books.single.filePath),
         isTrue,
         reason: 'stored file_path must be inside appDocsDir',
       );
     });
 
     test('chapters are persisted with blocks_json per D-03', () async {
-      final path = await _stageFixture('minimal.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final path = await _stageFixture('minimal.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([path]);
 
-      final chapters = await _db.select(_db.chapters).get();
+      final chapters = await db.select(db.chapters).get();
       expect(chapters, isNotEmpty);
       // minimal.epub has a <h1>Chapter 1</h1><p>Hello world.</p> chapter
       final chapter = chapters.first;
@@ -121,15 +122,15 @@ void main() {
     });
 
     test('minimal.epub with no cover leaves coverPath null', () async {
-      final path = await _stageFixture('minimal.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final path = await _stageFixture('minimal.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([path]);
 
-      final book = (await _db.select(_db.books).get()).single;
+      final book = (await db.select(db.books).get()).single;
       expect(book.coverPath, isNull);
       // And the covers dir should either not exist yet or be empty.
-      final coversDir = Directory(p.join(_docsDir.path, 'covers'));
+      final coversDir = Directory(p.join(docsDir.path, 'covers'));
       if (coversDir.existsSync()) {
         expect(coversDir.listSync(), isEmpty);
       }
@@ -139,17 +140,17 @@ void main() {
   group('ImportNotifier.importFromPaths — failure paths (LIB-04, D-12)', () {
     test('drm_encrypted.epub emits ImportFailed "DRM" and inserts no row',
         () async {
-      final path = await _stageFixture('drm_encrypted.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final path = await _stageFixture('drm_encrypted.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([path]);
 
-      final states = _container.read(importNotifierProvider);
+      final states = container.read(importProvider);
       expect(states, hasLength(1));
       expect(states.single, isA<ImportFailed>());
       expect((states.single as ImportFailed).reason, contains('DRM'));
 
-      final books = await _db.select(_db.books).get();
+      final books = await db.select(db.books).get();
       expect(books, isEmpty,
           reason: 'DRM reject must not leave an orphan books row (D-12)');
     });
@@ -159,36 +160,36 @@ void main() {
       // Truncate minimal.epub to 100 bytes — the parser will throw
       // EpubParseException per Plan 04 Task 2.
       final bytes = await _loadFixture('minimal.epub');
-      final corruptPath = p.join(_sourceDir.path, 'corrupt.epub');
+      final corruptPath = p.join(sourceDir.path, 'corrupt.epub');
       await File(corruptPath).writeAsBytes(bytes.sublist(0, 100));
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([corruptPath]);
 
-      final states = _container.read(importNotifierProvider);
+      final states = container.read(importProvider);
       expect(states, hasLength(1));
       expect(states.single, isA<ImportFailed>());
       final reason = (states.single as ImportFailed).reason.toLowerCase();
       expect(reason, anyOf(contains('corrupt'), contains('invalid')));
 
-      final books = await _db.select(_db.books).get();
+      final books = await db.select(db.books).get();
       expect(books, isEmpty);
     });
 
     test('batch [minimal, drm] imports one success and one failure', () async {
-      final okPath = await _stageFixture('minimal.epub', _sourceDir);
+      final okPath = await _stageFixture('minimal.epub', sourceDir);
       final drmPath =
-          await _stageFixture('drm_encrypted.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+          await _stageFixture('drm_encrypted.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
 
       await notifier.importFromPaths([okPath, drmPath]);
 
-      final states = _container.read(importNotifierProvider);
+      final states = container.read(importProvider);
       expect(states, hasLength(2));
       expect(states[0], isA<ImportSuccess>());
       expect(states[1], isA<ImportFailed>());
 
-      final books = await _db.select(_db.books).get();
+      final books = await db.select(db.books).get();
       expect(books, hasLength(1),
           reason: 'batch must continue past one failure');
     });
@@ -201,17 +202,17 @@ void main() {
       // because the import service's destPath is constructed from
       // basename(sourcePath), two source files with the same basename
       // collide on the books.file_path UNIQUE constraint.
-      final path1 = await _stageFixture('minimal.epub', _sourceDir);
-      final notifier = _container.read(importNotifierProvider.notifier);
+      final path1 = await _stageFixture('minimal.epub', sourceDir);
+      final notifier = container.read(importProvider.notifier);
       await notifier.importFromPaths([path1]);
-      expect((await _db.select(_db.books).get()), hasLength(1));
+      expect((await db.select(db.books).get()), hasLength(1));
 
       // Stage the same fixture into a sibling dir with the same filename.
-      final otherDir = Directory(p.join(_sandbox.path, 'src2'))..createSync();
+      final otherDir = Directory(p.join(sandbox.path, 'src2'))..createSync();
       final path2 = await _stageFixture('minimal.epub', otherDir);
       await notifier.importFromPaths([path2]);
 
-      final states = _container.read(importNotifierProvider);
+      final states = container.read(importProvider);
       expect(states, hasLength(1),
           reason: 'state resets on each importFromPaths call');
       expect(states.single, isA<ImportFailed>());
@@ -220,7 +221,7 @@ void main() {
         contains('already'),
       );
       // Still only one book in the library.
-      expect((await _db.select(_db.books).get()), hasLength(1));
+      expect((await db.select(db.books).get()), hasLength(1));
     });
   });
 
