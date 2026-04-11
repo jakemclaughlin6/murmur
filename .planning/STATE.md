@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-06-PLAN.md (LibraryNotifier + BookCard + BookCardShimmer)
-last_updated: "2026-04-11T22:20:27.753Z"
+stopped_at: Completed 02-07-PLAN.md (LibraryScreen composition + context sheet + empty states)
+last_updated: "2026-04-11T23:16:30.229Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 17
-  completed_plans: 15
-  percent: 88
+  completed_plans: 16
+  percent: 94
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (library-epub-import) — EXECUTING
-Plan: 7 of 8
+Plan: 8 of 8
 Status: Ready to execute
 Last activity: 2026-04-11
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P02-04 | ~35m | 3 tasks | 13 files |
 | Phase 02-library-epub-import P05 | 12m | 3 tasks | 14 files |
 | Phase 02-library-epub-import P06 | 50m | 2 tasks | 6 files |
+| Phase 02-library-epub-import P07 | 55m | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - [Phase 02-library-epub-import]: Plan 02-05 D-02-05-D: appDocumentsDir is a Riverpod Future provider wrapping path_provider so tests override via ProviderContainer(overrides:) without TestDefaultBinaryMessengerBinding
 - [Phase 02-library-epub-import]: Plan 02-06: LibraryNotifier uses manual StreamController bridge because mutations (setSortMode/setSearchQuery) must re-emit without the Drift stream firing — sort/search are in-memory over cached _latestRaw
 - [Phase 02-library-epub-import]: Plan 02-06: BookCard.coverImageOverride test seam (nullable ImageProvider field) is the pragmatic workaround for Image.file hanging in widget tests under FakeAsync — MemoryImage in tests, FileImage in production
+- [Phase 02-library-epub-import]: Plan 02-07 D-02-07-B: import_picker_provider.dart Riverpod seam — LibraryScreen imports only the provider file (no file_picker), main.dart overrides at runApp time with the real pickAndImportEpubs wrapper. Repeats 02-05 D-02-05-A's file_picker isolation pattern at a different layer.
+- [Phase 02-library-epub-import]: Plan 02-07 D-02-07-D: Spy-notifier pattern for widget tests against generated Riverpod class providers. Subclass LibraryNotifier, override build() to Stream.value(), override mutations to record calls, plug in via libraryProvider.overrideWith(). Avoids flutter_tester SEGV from leaked Drift stream subscriptions across test boundaries.
+- [Phase 02-library-epub-import]: Plan 02-07 D-02-07-E: Full-app widget tests loading MurmurApp need three provider overrides — appDatabaseProvider (in-memory Drift), libraryProvider (synchronous stub), shareIntentSourceProvider (no-op). Without them pumpAndSettle hangs on real Drift file open + real MethodChannel.
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T22:20:27.750Z
-Stopped at: Completed 02-06-PLAN.md (LibraryNotifier + BookCard + BookCardShimmer)
+Last session: 2026-04-11T23:16:17.719Z
+Stopped at: Completed 02-07-PLAN.md (LibraryScreen composition + context sheet + empty states)
 Resume file: None
