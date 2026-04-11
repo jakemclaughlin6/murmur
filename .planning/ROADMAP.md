@@ -70,7 +70,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Tapping the center of the reader toggles immersive mode; reading progress auto-saves on page turn (debounced 2s) and flushes on `AppLifecycleState.paused`
 **Plans**: 8 plans
 - [x] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
+- [x] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
 - [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
 - [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
 - [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener

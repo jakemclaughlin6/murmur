@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Completed 02-01-PLAN.md (Phase 2 unblock: analyzer override + package spikes)"
-last_updated: "2026-04-11T20:38:29.959Z"
+stopped_at: Completed 02-02-PLAN.md (Block IR + Wave 0 scaffold)
+last_updated: "2026-04-11T20:50:15.118Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 17
-  completed_plans: 10
-  percent: 59
+  completed_plans: 11
+  percent: 65
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (library-epub-import) — EXECUTING
-Plan: 2 of 8
+Plan: 3 of 8
 Status: Ready to execute
 Last activity: 2026-04-11
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-scaffold-compliance-foundation P01 | ~4 hours | 4 tasks | 72 files |
 | Phase 02-library-epub-import P01 | 25m | 3 tasks | 6 files |
+| Phase 02-library-epub-import P02 | 20m | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,7 @@ Recent decisions affecting current work:
 - [Phase 01-scaffold-compliance-foundation]: FND-06 amended (D-21): 2 serif families (Literata + Merriweather) not 3-4; FND-09 amended (D-06): Android AAB on push + iOS workflow_dispatch xcarchive
 - [Phase 02-library-epub-import]: Four coordinated dependency_overrides unblock Phase 2: analyzer ^10, dart_style >=3.1.4<3.1.8, win32 ^6 (mobile-only), plus substitution of receive_sharing_intent_plus (discontinued) → receive_sharing_intent ^1.8.1
 - [Phase 02-library-epub-import]: epubx ^4.0.0 spike PASS under Dart 3.11 (minimal EPUB fixture, clean parse); receive_sharing_intent ^1.8.1 spike PASS (imports clean); both research assumptions A2 and A4 resolved, Plan 04 parser and LIB-02 share-intent both proceed as planned
+- [Phase 02-library-epub-import]: Block IR sealed class with 5 variants (Paragraph/Heading/ImageBlock/Blockquote/ListItem); exhaustive-switch JSON codec with FormatException tampering gate; Heading is the one non-const variant because const + ArgumentError are mutually exclusive in Dart
 
 ### Pending Todos
 
@@ -85,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T20:38:29.957Z
-Stopped at: Completed 02-01-PLAN.md (Phase 2 unblock: analyzer override + package spikes)
+Last session: 2026-04-11T20:50:15.115Z
+Stopped at: Completed 02-02-PLAN.md (Block IR + Wave 0 scaffold)
 Resume file: None
