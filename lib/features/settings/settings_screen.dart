@@ -34,9 +34,12 @@ class SettingsScreen extends StatelessWidget {
             fontFamily: 'Merriweather',
           ),
           const Divider(height: 1),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text('Diagnostics', style: TextStyle(fontSize: 18)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Diagnostics',
+              style: theme.textTheme.titleLarge,
+            ),
           ),
           const CrashLogStatusTile(),
         ],
