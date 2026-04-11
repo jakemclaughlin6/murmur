@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'core/crash/crash_logger.dart';
+import 'features/library/import_picker.dart' as import_picker;
+import 'features/library/import_picker_provider.dart';
 
 Future<void> main() async {
   // D-10: runZonedGuarded wraps everything so async errors outside the widget
@@ -32,7 +34,20 @@ Future<void> main() async {
       return true; // marked as handled; prevents hard crash in release builds
     };
 
-    runApp(const ProviderScope(child: MurmurApp()));
+    runApp(
+      ProviderScope(
+        overrides: [
+          // Wire the real file-picker entry point. This override lives
+          // in main.dart (not library_screen.dart) so that test code
+          // loading LibraryScreen never pulls file_picker's Windows
+          // impl into the analysis graph — see import_picker_provider.dart.
+          importPickerCallbackProvider.overrideWithValue(
+            (ref) => import_picker.pickAndImportEpubs(ref),
+          ),
+        ],
+        child: const MurmurApp(),
+      ),
+    );
   }, (Object error, StackTrace stack) {
     // Zone-level catch for anything that still slips through both handlers above.
     // CrashLogger may not be initialized if the failure happened during

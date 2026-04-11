@@ -79,8 +79,11 @@ class LibraryGrid extends ConsumerWidget {
           crossAxisCount: columnCount,
           crossAxisSpacing: 12,
           mainAxisSpacing: 16,
-          // Cover-dominant aspect: 2:3 cover + text rows below.
-          childAspectRatio: 0.55,
+          // Cover-dominant aspect: 2:3 cover area + 8px gap + two
+          // text rows below. 0.50 gives ~15-20px headroom for font
+          // metrics so BookCard's Column never overflows on narrow
+          // phone portrait cells.
+          childAspectRatio: 0.50,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => items[index],
