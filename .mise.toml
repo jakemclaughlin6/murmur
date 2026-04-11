@@ -5,8 +5,8 @@ yq = "latest"
 "android-sdk" = "16.0"
 
 [env]
-ANDROID_HOME = "{{ env.MISE_DATA_DIR }}/installs/android-sdk/16.0"
-ANDROID_SDK_ROOT = "{{ env.MISE_DATA_DIR }}/installs/android-sdk/16.0"
+ANDROID_HOME = "{{ env.HOME }}/.local/share/mise/installs/android-sdk/16.0"
+ANDROID_SDK_ROOT = "{{ env.HOME }}/.local/share/mise/installs/android-sdk/16.0"
 
 [tasks.doctor]
 run = "flutter doctor"
