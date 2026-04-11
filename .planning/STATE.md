@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Completed 02-05-PLAN.md (ImportNotifier + ShareIntentListener + /reader/:bookId stub)"
-last_updated: "2026-04-11T21:34:18.886Z"
+stopped_at: Completed 02-06-PLAN.md (LibraryNotifier + BookCard + BookCardShimmer)
+last_updated: "2026-04-11T22:20:27.753Z"
 last_activity: 2026-04-11
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 17
-  completed_plans: 14
-  percent: 82
+  completed_plans: 15
+  percent: 88
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 02 (library-epub-import) — EXECUTING
-Plan: 6 of 8
+Plan: 7 of 8
 Status: Ready to execute
 Last activity: 2026-04-11
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-library-epub-import P03 | 25m | 2 tasks | 11 files |
 | Phase 02 P02-04 | ~35m | 3 tasks | 13 files |
 | Phase 02-library-epub-import P05 | 12m | 3 tasks | 14 files |
+| Phase 02-library-epub-import P06 | 50m | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 02-library-epub-import]: Plan 02-05 D-02-05-A: split file_picker entry into import_picker.dart because file_picker 11.0.2's Windows impl uses win32 5.x symbols incompatible with our win32 ^6.0.0 override; keeps tests compilable against real fixture EPUBs
 - [Phase 02-library-epub-import]: Plan 02-05 D-02-05-B: ShareIntentSource abstract seam (not setMockValues) — Riverpod-overridable test boundary is cleaner than mutating a plugin singleton
 - [Phase 02-library-epub-import]: Plan 02-05 D-02-05-D: appDocumentsDir is a Riverpod Future provider wrapping path_provider so tests override via ProviderContainer(overrides:) without TestDefaultBinaryMessengerBinding
+- [Phase 02-library-epub-import]: Plan 02-06: LibraryNotifier uses manual StreamController bridge because mutations (setSortMode/setSearchQuery) must re-emit without the Drift stream firing — sort/search are in-memory over cached _latestRaw
+- [Phase 02-library-epub-import]: Plan 02-06: BookCard.coverImageOverride test seam (nullable ImageProvider field) is the pragmatic workaround for Image.file hanging in widget tests under FakeAsync — MemoryImage in tests, FileImage in production
 
 ### Pending Todos
 
@@ -97,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T21:34:08.348Z
-Stopped at: Completed 02-05-PLAN.md (ImportNotifier + ShareIntentListener + /reader/:bookId stub)
+Last session: 2026-04-11T22:20:27.750Z
+Stopped at: Completed 02-06-PLAN.md (LibraryNotifier + BookCard + BookCardShimmer)
 Resume file: None

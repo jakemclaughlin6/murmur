@@ -31,9 +31,9 @@ EPUB import, persistence, and browsing. Responsive for phones + tablets.
 - [x] **LIB-03**: Importer parses EPUB metadata (title, author, cover image, chapter list) and persists to Drift DB on a 15-EPUB test corpus without crashes
 - [x] **LIB-04**: Corrupt or DRM'd EPUB import surfaces a friendly snackbar error and leaves the library unchanged
 - [ ] **LIB-05**: User sees a responsive library grid — 2 cols on phone portrait, 3 on phone landscape, 4–6 on tablets
-- [ ] **LIB-06**: Each book card shows cover art, title, author, and a reading-progress ring
-- [ ] **LIB-07**: User can sort the library by recently read, title, or author
-- [ ] **LIB-08**: User can search the library by title or author
+- [x] **LIB-06**: Each book card shows cover art, title, author, and a reading-progress ring
+- [x] **LIB-07**: User can sort the library by recently read, title, or author
+- [x] **LIB-08**: User can search the library by title or author
 - [ ] **LIB-09**: User can long-press a book to open a context sheet with "Book Info" and "Delete"
 - [ ] **LIB-10**: Empty library state shows an illustration and an "Import your first book" CTA
 - [x] **LIB-11**: Library state persists across app restarts
@@ -193,9 +193,9 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | LIB-03 | Phase 2 | Complete |
 | LIB-04 | Phase 2 | Complete |
 | LIB-05 | Phase 2 | Pending |
-| LIB-06 | Phase 2 | Pending |
-| LIB-07 | Phase 2 | Pending |
-| LIB-08 | Phase 2 | Pending |
+| LIB-06 | Phase 2 | Complete |
+| LIB-07 | Phase 2 | Complete |
+| LIB-08 | Phase 2 | Complete |
 | LIB-09 | Phase 2 | Pending |
 | LIB-10 | Phase 2 | Pending |
 | LIB-11 | Phase 2 | Complete |
