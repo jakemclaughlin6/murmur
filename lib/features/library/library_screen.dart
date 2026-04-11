@@ -38,7 +38,6 @@ class LibraryScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () {
                   // Phase 2 wires this to the file_picker import flow.
-                  debugPrint('Library: Import CTA tapped (no-op in Phase 1)');
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Import your first book'),
