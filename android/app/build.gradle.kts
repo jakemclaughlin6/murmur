@@ -27,7 +27,7 @@ android {
     }
 
     signingConfigs {
-        create("debugCommitted") {
+        create("debugForPhase1") {  // Phase 7 replaces with uploadKeystore from env vars.
             storeFile = file("../keys/debug.keystore")
             storePassword = "murmurdebug"
             keyAlias = "murmurdebug"
@@ -37,13 +37,12 @@ android {
 
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("debugCommitted")
+            signingConfig = signingConfigs.getByName("debugForPhase1")
         }
         release {
-            // Phase 1 uses the committed debug keystore for release too so CI can produce
-            // a "signed debug AAB" with zero secrets plumbing. Phase 7 (QAL-05) replaces
-            // this with an upload keystore from GitHub Secrets. See android/keys/README.md.
-            signingConfig = signingConfigs.getByName("debugCommitted")
+            // TODO(Phase 7 QAL-05): replace with uploadKeystore from env vars.
+            // DANGER: uploading this to the Play Store permanently burns the app identity.
+            signingConfig = signingConfigs.getByName("debugForPhase1")
         }
     }
 }
