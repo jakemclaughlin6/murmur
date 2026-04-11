@@ -7,14 +7,23 @@ import 'package:murmur/app/app.dart';
 import 'package:murmur/core/crash/crash_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+late Directory _tempDocs;
+
 void main() {
   setUpAll(() async {
     // CrashLogger is initialized by main.dart in production; widget tests
     // don't run main.dart, so we do the equivalent here via the test helper.
-    final tempDocs = await Directory.systemTemp.createTemp('murmur_nav_test_');
+    _tempDocs = await Directory.systemTemp.createTemp('murmur_nav_test_');
     CrashLogger.resetForTest();
-    await CrashLogger.initializeForTest(docs: tempDocs);
+    await CrashLogger.initializeForTest(docs: _tempDocs);
     SharedPreferences.setMockInitialValues({});
+  });
+
+  tearDownAll(() async {
+    CrashLogger.resetForTest();
+    if (_tempDocs.existsSync()) {
+      await _tempDocs.delete(recursive: true);
+    }
   });
 
   group('Navigation — FND-02 3-tab bottom nav', () {
