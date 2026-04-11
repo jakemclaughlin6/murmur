@@ -3,8 +3,8 @@ phase: 01-scaffold-compliance-foundation
 fixed_at: 2026-04-11T00:00:00Z
 review_path: .planning/phases/01-scaffold-compliance-foundation/01-REVIEW.md
 iteration: 1
-findings_in_scope: 4
-fixed: 4
+findings_in_scope: 7
+fixed: 7
 skipped: 0
 status: all_fixed
 ---
@@ -16,8 +16,8 @@ status: all_fixed
 **Iteration:** 1
 
 **Summary:**
-- Findings in scope: 4 (1 Critical, 3 Warning)
-- Fixed: 4
+- Findings in scope: 7 (1 Critical, 3 Warning, 3 Info)
+- Fixed: 7
 - Skipped: 0
 
 ## Fixed Issues
@@ -45,6 +45,24 @@ status: all_fixed
 **Files modified:** `android/app/build.gradle.kts`
 **Commit:** e0226fe
 **Applied fix:** Renamed the signing config from `debugCommitted` to `debugForPhase1` in all three locations (create, debug getByName, release getByName). Added a `TODO(Phase 7 QAL-05)` comment and a `DANGER` warning on the release `buildType` making it explicit that uploading this build permanently burns the app identity.
+
+### IN-01: `analysis_options.yaml` — version constraint in `plugins:` block may not be respected
+
+**Files modified:** `analysis_options.yaml`
+**Commit:** a6f6e7f
+**Applied fix:** Changed `riverpod_lint: ^3.0.0` (key-value form) to `- riverpod_lint` (bare list entry). The Dart analysis server plugin API does not parse semver constraints in the plugins block; version resolution comes from `pubspec.yaml` dev_dependencies.
+
+### IN-02: `settings_screen.dart` — "Diagnostics" label uses magic font size instead of theme text style
+
+**Files modified:** `lib/features/settings/settings_screen.dart`
+**Commit:** 53b7b53
+**Applied fix:** Replaced `TextStyle(fontSize: 18)` with `theme.textTheme.titleLarge` on the Diagnostics section header, matching the Reader fonts header above it. Removed `const` from the outer `Padding` since the child now references a runtime theme value.
+
+### IN-03: `lib/features/library/library_screen.dart` — `debugPrint` in production button handler
+
+**Files modified:** `lib/features/library/library_screen.dart`
+**Commit:** 24297e2
+**Applied fix:** Removed the `debugPrint` call entirely. The comment `// Phase 2 wires this to the file_picker import flow.` is sufficient documentation and the line would have triggered `avoid_print: true` in CI with `--fatal-warnings`.
 
 ---
 
