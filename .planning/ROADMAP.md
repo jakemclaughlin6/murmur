@@ -55,15 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can sort the library by recently read / title / author, search by title or author, and long-press a book to open a "Book Info" / "Delete" context sheet
   4. When a corrupt or DRM'd EPUB is imported, the user sees a friendly snackbar explaining the error and the library is unchanged (no crash)
   5. With an empty library, the user sees an illustration and a clear "Import your first book" CTA
-**Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [ ] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: TBD
 **UI hint**: yes
 
 ### Phase 3: Reader with Sentence-Span Architecture
@@ -97,15 +89,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can play / pause, scrub within the chapter, change speed (0.75×–2×), skip forward one sentence, skip back one sentence, pick from ~10 curated English voices with <2s previews, and set per-book voice and speed overrides
   4. Audio keeps playing with the app backgrounded on both iOS and Android, the lock screen shows book + chapter metadata with play/pause and next-chapter controls, and an incoming call or Siri pauses murmur and resumes cleanly on interruption end
   5. Reader and TTS coordinate through exactly one shared `playbackStateProvider` — no direct feature-to-feature imports — and `just_audio.setSpeed()` is the single owner of runtime speed (Sherpa `length_scale` is fixed at 1.0, asserted in code)
-**Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [ ] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: TBD
 **UI hint**: yes
 
 ### Phase 5: Sentence Highlighting & Two-Way Sync
@@ -116,15 +100,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. As TTS plays, the active sentence is highlighted in the reader with theme-appropriate color and WCAG-AA contrast across all four themes (light / sepia / dark / OLED)
   2. As each sentence completes, the reader auto-pages or auto-scrolls so the active sentence stays in the viewport upper-third without jitter on a mid-range device
   3. Tapping any sentence in the reader starts TTS from that sentence (two-way sync — TTS follows reader, reader follows TTS)
-**Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [ ] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: TBD
 **UI hint**: yes
 
 ### Phase 6: Polish, Accessibility & Ship Readiness
@@ -137,15 +113,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can set default font / theme / voice / speed, view TTS model install status and storage usage, re-download the model, open and share the local crash log, and read the licenses and truthful privacy statement from Settings
   4. First-launch onboarding walks the user through model download (with Wi-Fi-only toggle) and importing their first EPUB, then lands them on a library either populated or showing the empty-state CTA
   5. All interactive elements have semantic labels and minimum 48×48px touch targets; a 2-hour continuous TTS playback session with a 1000-page EPUB shows no measurable memory leak on both a physical iOS and a physical Android device; the reader holds 60fps on mid-range phone and tablet profile builds
-**Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [ ] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: TBD
 **UI hint**: yes
 
 ### Phase 7: Paid Distribution
@@ -157,15 +125,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A signed iOS build is uploaded to App Store Connect as a paid app at ~$3 with export compliance answered (`ITSAppUsesNonExemptEncryption=false`), age rating set, and privacy labels declaring "Data Not Collected"
   3. Store listings on both stores include phone + tablet screenshots and a truthful privacy policy
   4. The repository README documents the full local build flow for Android and iOS including Sherpa-ONNX native linking notes and model SHA-256 pinning
-**Plans**: 8 plans
-- [ ] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [ ] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [ ] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [ ] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [ ] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [ ] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [ ] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: TBD
 
 ## Progress
 
