@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. When a thrown exception occurs anywhere in the app, the error is written to an on-device crash log file (no network, no third-party SDK) that can later be surfaced in Settings
 **Plans**: 9 plans (5 waves)
 **Plans**:
-- [ ] 01-01-PLAN.md — Toolchain & scaffold gate (mise + flutter create + amendments)
+- [x] 01-01-PLAN.md — Toolchain & scaffold gate (mise + flutter create + amendments)
 - [ ] 01-02-PLAN.md — Dependencies + codegen bootstrap (pubspec + analysis_options)
 - [ ] 01-03-PLAN.md — Android platform config (gradle + keystore + manifest)
 - [ ] 01-04-PLAN.md — iOS platform config (Info.plist + pbxproj + Podfile)
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffold & Compliance Foundation | 0/TBD | Not started | - |
+| 1. Scaffold & Compliance Foundation | 1/9 | In Progress|  |
 | 2. Library & EPUB Import | 0/TBD | Not started | - |
 | 3. Reader with Sentence-Span Architecture | 0/TBD | Not started | - |
 | 4. TTS Engine & Playback Foundation | 0/TBD | Not started | - |

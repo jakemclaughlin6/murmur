@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-04-11T16:04:02.623Z"
-last_activity: 2026-04-11 — Roadmap created; 72/72 v1 requirements mapped
+status: executing
+stopped_at: Completed 01-01-PLAN.md (Toolchain & scaffold gate)
+last_updated: "2026-04-11T17:22:27.138Z"
+last_activity: 2026-04-11
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 9
+  completed_plans: 1
+  percent: 11
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Point murmur at an EPUB and have it read to you — in a natural neural voice, fully offline, without ever creating an account.
-**Current focus:** Phase 1 — Scaffold & Compliance Foundation
+**Current focus:** Phase 01 — scaffold-compliance-foundation
 
 ## Current Position
 
-Phase: 1 of 7 (Scaffold & Compliance Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-11 — Roadmap created; 72/72 v1 requirements mapped
+Phase: 01 (scaffold-compliance-foundation) — EXECUTING
+Plan: 2 of 9
+Status: Ready to execute
+Last activity: 2026-04-11
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-scaffold-compliance-foundation P01 | ~4 hours | 4 tasks | 72 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - Per-paragraph `RichText` inside `ListView.builder` from Phase 3 (sentence-span architecture is non-negotiable)
 - `just_audio.setSpeed()` owns runtime playback speed; Sherpa `length_scale` fixed at 1.0
 - Compliance groundwork (Info.plist, manifest, CI, crash log) lands in Phase 1, not Phase 7
+- [Phase 01-scaffold-compliance-foundation]: flutter create --org dev.jmclaughlin sets bundle IDs automatically — 6 occurrences in iOS pbxproj, no hand-edits needed
+- [Phase 01-scaffold-compliance-foundation]: MISE_DATA_DIR not available as template var in .mise.toml env block — use {{ env.HOME }}/.local/share/mise instead
+- [Phase 01-scaffold-compliance-foundation]: FND-06 amended (D-21): 2 serif families (Literata + Merriweather) not 3-4; FND-09 amended (D-06): Android AAB on push + iOS workflow_dispatch xcarchive
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-11T16:04:02.621Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-scaffold-compliance-foundation/01-CONTEXT.md
+Last session: 2026-04-11T17:22:27.135Z
+Stopped at: Completed 01-01-PLAN.md (Toolchain & scaffold gate)
+Resume file: None

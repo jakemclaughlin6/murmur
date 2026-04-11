@@ -11,7 +11,7 @@ Scope for initial paid release (~$3 one-time) on Google Play Store and Apple App
 
 Scaffolding and compliance groundwork that must land in Phase 1 so later phases aren't blocked at submission time.
 
-- [ ] **FND-01**: App launches on Android and iOS from a signed build with the correct bundle ID (`com.yourname.murmur`) and a placeholder splash / icon
+- [x] **FND-01**: App launches on Android and iOS from a signed build with the correct bundle ID (`com.yourname.murmur`) and a placeholder splash / icon
 - [ ] **FND-02**: App navigates between Library, Reader, and Settings routes using go_router
 - [ ] **FND-03**: Riverpod provider scope is installed at the app root and survives hot reload
 - [ ] **FND-04**: Drift database initializes on first launch with schema versioning wired up for future migrations
@@ -178,7 +178,7 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 1 | Pending |
+| FND-01 | Phase 1 | Complete |
 | FND-02 | Phase 1 | Pending |
 | FND-03 | Phase 1 | Pending |
 | FND-04 | Phase 1 | Pending |
