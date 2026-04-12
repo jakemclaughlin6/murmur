@@ -55,7 +55,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can sort the library by recently read / title / author, search by title or author, and long-press a book to open a "Book Info" / "Delete" context sheet
   4. When a corrupt or DRM'd EPUB is imported, the user sees a friendly snackbar explaining the error and the library is unchanged (no crash)
   5. With an empty library, the user sees an illustration and a clear "Import your first book" CTA
-**Plans**: TBD
+**Plans**: 8 plans
+- [x] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
+- [x] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
+- [x] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
+- [x] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
+- [x] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
+- [x] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
+- [x] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
+- [x] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
 **UI hint**: yes
 
 ### Phase 3: Reader with Sentence-Span Architecture
@@ -68,15 +76,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can jump to any chapter via a persistent sidebar on tablet or a slide-over drawer on phone, with the current chapter visually highlighted
   4. VoiceOver and TalkBack read paragraphs as whole paragraphs (not sentence-by-sentence) because `Semantics` wraps each paragraph block
   5. Tapping the center of the reader toggles immersive mode; reading progress auto-saves on page turn (debounced 2s) and flushes on `AppLifecycleState.paused`
-**Plans**: 8 plans
-- [x] 02-01-PLAN.md — Toolchain unblock (analyzer override + Phase 2 deps) + epubx/share-intent spikes
-- [x] 02-02-PLAN.md — Block IR sealed hierarchy + JSON codec + Wave 0 test scaffolding
-- [x] 02-03-PLAN.md — Drift v2 schema (Books + Chapters) + generated migration test
-- [x] 02-04-PLAN.md — EPUB parser core (DOM walker) + DRM detector + Isolate wrapper
-- [x] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
-- [x] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
-- [x] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [x] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+**Plans**: 5 plans (4 waves)
+Plans:
+- [ ] 03-01-PLAN.md — Sentence data model + SentenceSplitter (TDD)
+- [ ] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
+- [ ] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
+- [ ] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)
+- [ ] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification
 **UI hint**: yes
 
 ### Phase 4: TTS Engine & Playback Foundation
@@ -136,7 +142,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Compliance Foundation | 9/9 | Complete   | 2026-04-11 |
 | 2. Library & EPUB Import | 0/TBD | Not started | - |
-| 3. Reader with Sentence-Span Architecture | 0/TBD | Not started | - |
+| 3. Reader with Sentence-Span Architecture | 0/5 | Not started | - |
 | 4. TTS Engine & Playback Foundation | 0/TBD | Not started | - |
 | 5. Sentence Highlighting & Two-Way Sync | 0/TBD | Not started | - |
 | 6. Polish, Accessibility & Ship Readiness | 0/TBD | Not started | - |
