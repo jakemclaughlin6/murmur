@@ -93,6 +93,7 @@ All packages needed for Phase 3 are already in `pubspec.yaml`. Phase 3 is pure F
 | `drift` / `drift_flutter` | Reading progress queries (update chapter/offset, update lastReadDate, get chapters for book) |
 | `shared_preferences` | Font size and font family persistence |
 | `go_router` | `/reader/:bookId` route already wired |
+| `epubx` | Image extraction from EPUB zip (for ImageBlock rendering) |
 
 ### New Drift Queries (Not Schema Changes)
 
@@ -114,6 +115,8 @@ lib/
     text/
       sentence.dart              # Sentence data model (D-03)
       sentence_splitter.dart     # SentenceSplitter class (D-02)
+    epub/
+      image_extractor.dart       # Extract inline images from EPUB zip (new)
     db/
       app_database.dart          # Add query methods (no schema change)
   features/
@@ -412,10 +415,10 @@ GestureDetector(
 **How to avoid:** Use `AutomaticKeepAliveClientMixin` on the ChapterPage widget, or keep the ScrollController position in a Riverpod provider keyed by chapter index. `PageController(keepPage: true)` helps but is not sufficient alone for the inner ListView state.
 **Warning signs:** Swiping forward then back always showing chapter top.
 
-### Pitfall 5: ImageBlock Rendering from EPUB Archive
-**What goes wrong:** ImageBlocks reference EPUB-internal hrefs (e.g., `../images/cover.jpg`). These are paths within the EPUB zip, not file system paths.
-**Why it happens:** Phase 2's Block IR stores the EPUB-internal `href` as-is.
-**How to avoid:** At render time, the image must be extracted from the EPUB archive. Two approaches: (a) extract all images at import time and cache to disk (simpler at render time, more disk usage), or (b) extract on demand using `epubx` to read the EPUB zip and find the image by href (lazy, less disk). Approach (a) is recommended -- extract images during import and store paths in a known location. The `ImageBlock.href` then maps to `${appDocumentsDir}/books/${bookId}/images/${filename}`.
+### Pitfall 5: ImageBlock Rendering -- Phase 2 Did NOT Extract Inline Images (CONFIRMED GAP)
+**What goes wrong:** ImageBlocks reference EPUB-internal hrefs (e.g., `../images/cover.jpg`). These are paths within the EPUB zip, not file system paths. Phase 2's import service (`import_service.dart`) only extracts cover art via `epubx` CoverImage, re-encoded to JPEG. **Inline chapter images were NOT extracted** -- they remain inside the EPUB zip stored at `${appDocumentsDir}/books/`. [VERIFIED: `import_service.dart` inspection]
+**Why it happens:** Phase 2 scope was library import, not reader rendering. The Block IR stores the EPUB-internal `href` as-is per design.
+**How to avoid:** **Phase 3 must add an image extraction step.** Recommended approach: **extract-on-first-open**. When a book is opened for reading, check if its images have been extracted (e.g., existence of `${appDocumentsDir}/books/${bookId}/images/` directory). If not, open the EPUB zip via `epubx`, resolve each `ImageBlock.href` relative to the chapter XHTML path, extract the image bytes, and write to `${appDocumentsDir}/books/${bookId}/images/${filename}`. This is a one-time cost per book. The planner MUST schedule this as a task.
 **Warning signs:** Broken image icons in the reader.
 
 ### Pitfall 6: SystemChrome Not Reset on Reader Exit
@@ -427,20 +430,21 @@ GestureDetector(
 ### Pitfall 7: Sentence Splitter Edge Cases
 **What goes wrong:** "Mr. Smith went to Washington. He liked it." splits into ["Mr.", " Smith went to Washington.", " He liked it."] -- three sentences instead of two.
 **Why it happens:** Naive split on `.` doesn't know about abbreviations.
-**How to avoid:** The basic splitter uses a negative lookbehind pattern to skip known abbreviations. See the SentenceSplitter code example below. Accept that edge cases will exist -- Phase 4 TTS-06 hardens with 500+ fixtures.
+**How to avoid:** The basic splitter uses a negative lookbehind pattern to skip known abbreviations. Accept that edge cases will exist -- Phase 4 TTS-06 hardens with 500+ fixtures.
 **Warning signs:** Short fragments appearing as standalone sentences in the reader (visual inspection with debug borders on TextSpans).
 
 ## Code Examples
 
-### SentenceSplitter Implementation (D-02)
+### SentenceSplitter Design (D-02)
+
+The `SentenceSplitter` is ~50-80 lines of pure Dart with zero package dependencies. It lives in `lib/core/text/sentence_splitter.dart` and is fully unit-testable.
+
+**Class signature and approach:**
 
 ```dart
 // lib/core/text/sentence_splitter.dart
-// Basic sentence splitter for Phase 3. Phase 4 TTS-06 hardens with 500+ fixtures.
-
 class SentenceSplitter {
-  // Common English abbreviations that should NOT trigger a sentence break.
-  // This list is intentionally conservative for Phase 3.
+  /// Common English abbreviations that should NOT trigger a sentence break.
   static const _abbreviations = {
     'Mr', 'Mrs', 'Ms', 'Dr', 'Prof', 'Rev', 'Sr', 'Jr',
     'St', 'Ave', 'Blvd',
@@ -450,121 +454,38 @@ class SentenceSplitter {
     'Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   };
 
-  // Also protect: U.S., U.K., A.M., P.M., e.g., i.e.
-  static final _abbreviationDotPattern = RegExp(
-    r'(?:^|[\s(])([A-Z]\.){2,}', // Matches A.M., U.S.A., etc.
-  );
-
-  List<Sentence> split(String text) {
-    if (text.trim().isEmpty) return const [];
-
-    final sentences = <Sentence>[];
-    final buffer = StringBuffer();
-    final chars = text.runes.toList();
-
-    for (var i = 0; i < chars.length; i++) {
-      final char = String.fromCharCode(chars[i]);
-      buffer.write(char);
-
-      if (char == '.' || char == '!' || char == '?') {
-        // Check for ellipsis (... or more dots)
-        if (char == '.' && _isEllipsis(chars, i)) continue;
-
-        // Check for decimal number (e.g., 3.14)
-        if (char == '.' && _isDecimal(chars, i)) continue;
-
-        // Check for known abbreviation
-        if (char == '.' && _isAbbreviation(buffer.toString())) continue;
-
-        // Check for initials pattern (A.B.C.)
-        if (char == '.' && _isInitialPattern(buffer.toString())) continue;
-
-        // Include any trailing quote or paren
-        while (i + 1 < chars.length) {
-          final next = String.fromCharCode(chars[i + 1]);
-          if (next == '"' || next == '\u201D' || next == '\'' ||
-              next == '\u2019' || next == ')') {
-            buffer.write(next);
-            i++;
-          } else {
-            break;
-          }
-        }
-
-        // We have a sentence boundary
-        final sentenceText = buffer.toString().trim();
-        if (sentenceText.isNotEmpty) {
-          sentences.add(Sentence(sentenceText));
-        }
-        buffer.clear();
-
-        // Skip whitespace after sentence end
-        while (i + 1 < chars.length &&
-            String.fromCharCode(chars[i + 1]).trim().isEmpty) {
-          i++;
-        }
-      }
-    }
-
-    // Remaining text is a sentence (may not end with punctuation)
-    final remaining = buffer.toString().trim();
-    if (remaining.isNotEmpty) {
-      sentences.add(Sentence(remaining));
-    }
-
-    return sentences;
-  }
-
-  bool _isEllipsis(List<int> chars, int i) {
-    // Look ahead for more dots
-    if (i + 1 < chars.length && chars[i + 1] == 0x2E) return true; // .
-    // Also check Unicode ellipsis character
-    if (chars[i] == 0x2026) return false; // treat as sentence end
-    return false;
-  }
-
-  bool _isDecimal(List<int> chars, int i) {
-    if (i == 0) return false;
-    final prev = chars[i - 1];
-    final hasNext = i + 1 < chars.length;
-    final nextIsDigit = hasNext && chars[i + 1] >= 0x30 && chars[i + 1] <= 0x39;
-    final prevIsDigit = prev >= 0x30 && prev <= 0x39;
-    return prevIsDigit && nextIsDigit;
-  }
-
-  bool _isAbbreviation(String bufferSoFar) {
-    // Extract last word before the dot
-    final trimmed = bufferSoFar.trimRight();
-    if (trimmed.isEmpty) return false;
-    // Remove trailing dot
-    final withoutDot = trimmed.substring(0, trimmed.length - 1);
-    // Get last word
-    final lastSpace = withoutDot.lastIndexOf(RegExp(r'\s'));
-    final lastWord = lastSpace == -1 ? withoutDot : withoutDot.substring(lastSpace + 1);
-    return _abbreviations.contains(lastWord);
-  }
-
-  bool _isInitialPattern(String bufferSoFar) {
-    // Match patterns like "J. K. Rowling" -- single letter before dot
-    final trimmed = bufferSoFar.trimRight();
-    if (trimmed.length < 2) return false;
-    final beforeDot = trimmed[trimmed.length - 2];
-    if (trimmed.length >= 3) {
-      final beforeLetter = trimmed[trimmed.length - 3];
-      if (beforeLetter == ' ' || beforeLetter == '.') {
-        return beforeDot.contains(RegExp(r'[A-Z]'));
-      }
-    }
-    // Start of string
-    if (trimmed.length == 2 && beforeDot.contains(RegExp(r'[A-Z]'))) {
-      return true;
-    }
-    return false;
-  }
+  /// Splits text into sentences on `.`, `!`, `?` boundaries.
+  /// Handles: abbreviations, decimal numbers (3.14), ellipses (...),
+  /// initials (J. K. Rowling), trailing quotes/parens.
+  List<Sentence> split(String text);
 }
 ```
 
-**Note:** This is illustrative pseudocode. The actual implementation should be test-driven against basic fixtures first, then refined. Phase 4 TTS-06 will add 500+ regression fixtures. [ASSUMED]
+**Key test fixtures the implementation must pass:**
+
+```dart
+// Basic splitting
+'Hello. World.' => ['Hello.', 'World.']
+'Hello! World?' => ['Hello!', 'World?']
+
+// Abbreviations preserved
+'Mr. Smith went home. He rested.' => ['Mr. Smith went home.', 'He rested.']
+'Dr. Jones and Mrs. Smith met.' => ['Dr. Jones and Mrs. Smith met.']
+
+// Decimals preserved
+'It cost $3.50 total.' => ['It cost $3.50 total.']
+
+// Ellipsis preserved
+'He waited... then left.' => ['He waited... then left.']
+
+// Trailing quotes included
+'"Hello," she said. "Goodbye."' => ['"Hello," she said.', '"Goodbye."']
+
+// No trailing punctuation
+'This has no period' => ['This has no period']
+```
+
+**Implementation approach:** Either character-by-character scan with lookahead/lookbehind checks, or regex-based split with negative lookbehind for abbreviations. Either works; TDD against the fixtures above drives the choice. [ASSUMED]
 
 ### Sentence Data Model (D-03)
 
@@ -625,22 +546,16 @@ void initState() {
 | A2 | RepaintBoundary per block widget provides meaningful scroll performance gain | Pattern 2 | Unnecessary wrapping adds minor overhead; easy to remove |
 | A3 | AutomaticKeepAliveClientMixin preserves inner ListView scroll state in PageView | Pitfall 4 | May need per-chapter ScrollController + Riverpod state |
 | A4 | SystemChrome immersive mode reset in dispose() is reliable on both platforms | Pitfall 6 | May need RouteObserver or go_router redirect hook |
-| A5 | SentenceSplitter pseudocode handles the common 80% of English text correctly | Code Examples | Edge cases exposed by Phase 4 fixture suite |
-| A6 | Extract-at-import for ImageBlock images is more practical than on-demand extraction | Pitfall 5 | Phase 2 import may need retroactive image extraction step |
+| A5 | SentenceSplitter basic approach handles the common 80% of English text correctly | Code Examples | Edge cases exposed by Phase 4 fixture suite |
 
 ## Open Questions
 
-1. **ImageBlock image extraction timing**
-   - What we know: Phase 2 Block IR stores EPUB-internal href. Images live inside the EPUB zip.
-   - What's unclear: Did Phase 2 import extract images to disk, or does the reader need to extract on demand?
-   - Recommendation: Check Phase 2 import code. If images were NOT extracted, add an image extraction step as part of Phase 3 reader initialization (extract on first open, cache to `${appDocumentsDir}/books/${bookId}/images/`). This is a one-time cost per book.
-
-2. **PageView keepAlive behavior with many chapters**
+1. **PageView keepAlive behavior with many chapters**
    - What we know: Some books have 50+ chapters. Keeping all visited chapters alive wastes memory.
    - What's unclear: What's the right eviction strategy?
    - Recommendation: Only keep current + adjacent chapters alive. Let PageView dispose others. The scroll position for non-adjacent chapters is lost within the session but the Drift-persisted chapter+offset restores on re-navigation.
 
-3. **Font size slider UX: numeric label or not?**
+2. **Font size slider UX: numeric label or not?**
    - What we know: D-14 says continuous slider 12-28pt. Claude's discretion on label.
    - Recommendation: Show a numeric label (e.g., "18pt") next to the slider. It's a one-line `Text` widget and helps users communicate preferences ("I use 22pt").
 
@@ -715,6 +630,7 @@ void initState() {
 - `lib/core/db/tables/chapters_table.dart` -- blocksJson column, bookId FK with CASCADE
 - `lib/core/db/app_database.dart` -- Schema v2, no reading progress queries yet
 - `lib/features/reader/reader_screen.dart` -- Phase 2 stub to be replaced
+- `lib/features/library/import_service.dart` -- Confirmed: only cover extracted, no inline images
 - `lib/app/router.dart` -- `/reader/:bookId` route already wired as top-level (hides bottom nav)
 - `lib/core/theme/clay_colors.dart` -- LOCKED 4-theme palette
 - `lib/core/theme/app_theme.dart` -- `themeFor()` builder, system font for chrome
@@ -736,8 +652,8 @@ void initState() {
 **Confidence breakdown:**
 - Standard stack: HIGH -- no new dependencies, all packages verified in pubspec.yaml
 - Architecture: HIGH -- patterns locked by CONTEXT.md D-01 through D-17, verified against Flutter docs
-- Pitfalls: HIGH -- scroll restore, immersive mode, and semantics issues verified via Flutter docs and GitHub issues
-- SentenceSplitter: MEDIUM -- basic algorithm is well-understood but implementation details are pseudocode, will be refined by TDD
+- Pitfalls: HIGH -- scroll restore, immersive mode, semantics, and image gap verified via Flutter docs, GitHub issues, and codebase inspection
+- SentenceSplitter: MEDIUM -- basic algorithm is well-understood but implementation will be refined by TDD
 
 **Research date:** 2026-04-12
 **Valid until:** 2026-05-12 (stable Flutter patterns, no fast-moving dependencies)
