@@ -30,6 +30,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   PageController? _pageController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _immersive = false;
+  bool _sidebarCollapsed = false;
 
   @override
   void initState() {
@@ -158,17 +159,19 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
           child: pageView,
         );
 
-        // Build body: tablet has sidebar + page, phone has just page
+        // Build body: tablet has collapsible sidebar + page, phone has just page
         final Widget body;
         if (isTablet) {
           body = Row(
             children: [
-              ChapterSidebar(
-                chapters: readerState.chapters,
-                currentIndex: readerState.currentChapterIndex,
-                onChapterTap: (i) => _pageController?.jumpToPage(i),
-              ),
-              const VerticalDivider(width: 1),
+              if (!_sidebarCollapsed) ...[
+                ChapterSidebar(
+                  chapters: readerState.chapters,
+                  currentIndex: readerState.currentChapterIndex,
+                  onChapterTap: (i) => _pageController?.jumpToPage(i),
+                ),
+                const VerticalDivider(width: 1),
+              ],
               Expanded(child: gesturePageView),
             ],
           );
@@ -183,6 +186,17 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
             tooltip: 'Typography',
             onPressed: () => showTypographySheet(context),
           ),
+          if (isTablet)
+            IconButton(
+              icon: Icon(_sidebarCollapsed
+                  ? Icons.menu_open
+                  : Icons.menu),
+              tooltip: _sidebarCollapsed
+                  ? 'Show chapters'
+                  : 'Hide chapters',
+              onPressed: () =>
+                  setState(() => _sidebarCollapsed = !_sidebarCollapsed),
+            ),
           if (!isTablet)
             IconButton(
               icon: const Icon(Icons.list),
