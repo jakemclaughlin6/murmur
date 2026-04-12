@@ -54,7 +54,7 @@ final class ReadingProgressNotifierProvider
 }
 
 String _$readingProgressNotifierHash() =>
-    r'73c870fab6f0d6aba9d4c045e3922c68acb654e5';
+    r'25e09605da46860932261deae18ac4486a6a03e4';
 
 /// Debounced reading progress saver (D-12, RDR-11).
 ///

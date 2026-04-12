@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/db/app_database.dart';
 import '../../../core/db/app_database_provider.dart';
 
 part 'reading_progress_provider.g.dart';
@@ -16,14 +17,17 @@ class ReadingProgressNotifier extends _$ReadingProgressNotifier {
   int? _pendingBookId;
   int? _pendingChapter;
   double? _pendingOffset;
+  late final AppDatabase _db;
 
   @override
   void build() {
+    // Eagerly capture DB reference so _flushPending doesn't need ref.read.
+    // ref.read is forbidden inside onDispose callbacks in Riverpod 3.
+    _db = ref.read(appDatabaseProvider);
+
     // Cleanup timer on dispose (T-03-12)
     ref.onDispose(() {
       _debounceTimer?.cancel();
-      // Flush any pending save on dispose
-      _flushPending();
     });
   }
 
@@ -51,8 +55,7 @@ class ReadingProgressNotifier extends _$ReadingProgressNotifier {
         _pendingOffset == null) {
       return;
     }
-    final db = ref.read(appDatabaseProvider);
-    db.updateReadingProgress(_pendingBookId!, _pendingChapter!, _pendingOffset!);
+    _db.updateReadingProgress(_pendingBookId!, _pendingChapter!, _pendingOffset!);
     _pendingBookId = null;
     _pendingChapter = null;
     _pendingOffset = null;
