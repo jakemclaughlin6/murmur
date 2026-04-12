@@ -63,8 +63,9 @@ Widget renderBlock(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // TODO: render numbered items for ordered lists (future enhancement)
             Text(
-              ordered ? '\u2022 ' : '\u2022 ', // bullet for both; ordered numbering is a future enhancement
+              '\u2022 ',
               style: TextStyle(fontSize: fontSize, color: textColor),
             ),
             Expanded(

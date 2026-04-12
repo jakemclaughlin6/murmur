@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +51,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      ref.read(readingProgressProvider.notifier).flushNow();
+      unawaited(ref.read(readingProgressProvider.notifier).flushNow());
     }
   }
 
@@ -137,7 +139,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
                     .read(readingProgressProvider.notifier)
                     .onScrollChanged(
                       widget.bookId!,
-                      readerState.currentChapterIndex,
+                      index,
                       fraction,
                     );
               },

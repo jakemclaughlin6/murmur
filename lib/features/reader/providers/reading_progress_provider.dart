@@ -48,18 +48,19 @@ class ReadingProgressNotifier extends _$ReadingProgressNotifier {
   }
 
   /// Called on AppLifecycleState.paused -- immediate flush.
-  void flushNow() {
+  Future<void> flushNow() async {
     _debounceTimer?.cancel();
-    _flushPending();
+    await _flushPending();
   }
 
-  void _flushPending() {
+  Future<void> _flushPending() async {
     if (_pendingBookId == null ||
         _pendingChapter == null ||
         _pendingOffset == null) {
       return;
     }
-    _db.updateReadingProgress(_pendingBookId!, _pendingChapter!, _pendingOffset!);
+    await _db.updateReadingProgress(
+        _pendingBookId!, _pendingChapter!, _pendingOffset!);
     _pendingBookId = null;
     _pendingChapter = null;
     _pendingOffset = null;
