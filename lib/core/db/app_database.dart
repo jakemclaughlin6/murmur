@@ -53,5 +53,44 @@ class AppDatabase extends _$AppDatabase {
         },
       );
 
+  // ---------------------------------------------------------------------------
+  // Reading progress queries (Phase 3, Plan 02)
+  // ---------------------------------------------------------------------------
+
+  /// Returns all chapters for a book, ordered by spine position.
+  Future<List<Chapter>> getChaptersForBook(int bookId) {
+    return (select(chapters)
+          ..where((c) => c.bookId.equals(bookId))
+          ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)]))
+        .get();
+  }
+
+  /// Persists reading position as chapter index + scroll offset fraction.
+  ///
+  /// [chapter] is the zero-based chapter index in spine order.
+  /// [offset] is the 0.0–1.0 scroll fraction within that chapter.
+  Future<void> updateReadingProgress(
+      int bookId, int chapter, double offset) {
+    return (update(books)..where((b) => b.id.equals(bookId))).write(
+      BooksCompanion(
+        readingProgressChapter: Value(chapter),
+        readingProgressOffset: Value(offset),
+      ),
+    );
+  }
+
+  /// Stamps [lastReadDate] to `DateTime.now()` — called on every book open.
+  Future<void> updateLastReadDate(int bookId) {
+    return (update(books)..where((b) => b.id.equals(bookId))).write(
+      BooksCompanion(lastReadDate: Value(DateTime.now())),
+    );
+  }
+
+  /// Returns a single book by ID, or null if not found.
+  Future<Book?> getBook(int bookId) {
+    return (select(books)..where((b) => b.id.equals(bookId)))
+        .getSingleOrNull();
+  }
+
   static QueryExecutor _openConnection() => driftDatabase(name: 'murmur');
 }
