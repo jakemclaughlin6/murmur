@@ -111,6 +111,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
             ref
                 .read(readerProvider(widget.bookId!).notifier)
                 .setChapter(index);
+            // Record chapter change as progress so exiting after a swipe
+            // (without scrolling) still persists the new chapter position.
+            ref
+                .read(readingProgressProvider.notifier)
+                .onScrollChanged(widget.bookId!, index, 0.0);
           },
           itemBuilder: (context, index) {
             final blocks = readerState.blocksForChapter(index);

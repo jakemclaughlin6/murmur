@@ -26,8 +26,12 @@ class ReadingProgressNotifier extends _$ReadingProgressNotifier {
     _db = ref.read(appDatabaseProvider);
 
     // Cleanup timer on dispose (T-03-12)
+    // Flush any pending progress before disposal so position is never lost.
+    // _db was eagerly captured above so this is safe inside onDispose
+    // (ref.read is forbidden in Riverpod 3 disposal callbacks).
     ref.onDispose(() {
       _debounceTimer?.cancel();
+      _flushPending();
     });
   }
 
