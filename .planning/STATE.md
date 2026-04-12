@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-04-12T13:41:10.836Z"
-last_activity: 2026-04-12 -- Phase 03 planning complete
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-04-12T13:51:51.498Z"
+last_activity: 2026-04-12
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 22
-  completed_plans: 17
-  percent: 77
+  completed_plans: 18
+  percent: 82
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Point murmur at an EPUB and have it read to you — in a natural neural voice, fully offline, without ever creating an account.
-**Current focus:** Phase 02 — library-epub-import
+**Current focus:** Phase 03 — reader-with-sentence-span-architecture
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (reader-with-sentence-span-architecture) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-04-12 -- Phase 03 planning complete
+Last activity: 2026-04-12
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-library-epub-import P05 | 12m | 3 tasks | 14 files |
 | Phase 02-library-epub-import P06 | 50m | 2 tasks | 6 files |
 | Phase 02-library-epub-import P07 | 55m | 2 tasks | 12 files |
+| Phase 03 P01 | 5m | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,7 @@ Recent decisions affecting current work:
 - [Phase 02-library-epub-import]: Plan 02-07 D-02-07-B: import_picker_provider.dart Riverpod seam — LibraryScreen imports only the provider file (no file_picker), main.dart overrides at runApp time with the real pickAndImportEpubs wrapper. Repeats 02-05 D-02-05-A's file_picker isolation pattern at a different layer.
 - [Phase 02-library-epub-import]: Plan 02-07 D-02-07-D: Spy-notifier pattern for widget tests against generated Riverpod class providers. Subclass LibraryNotifier, override build() to Stream.value(), override mutations to record calls, plug in via libraryProvider.overrideWith(). Avoids flutter_tester SEGV from leaked Drift stream subscriptions across test boundaries.
 - [Phase 02-library-epub-import]: Plan 02-07 D-02-07-E: Full-app widget tests loading MurmurApp need three provider overrides — appDatabaseProvider (in-memory Drift), libraryProvider (synchronous stub), shareIntentSourceProvider (no-op). Without them pumpAndSettle hangs on real Drift file open + real MethodChannel.
+- [Phase 03]: SentenceSplitter uses character-by-character O(n) scan (not regex) with 32-abbreviation static set; single-letter uppercase initials treated as abbreviations
 
 ### Pending Todos
 
@@ -105,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T12:47:48.543Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-reader-with-sentence-span-architecture/03-CONTEXT.md
+Last session: 2026-04-12T13:51:51.495Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

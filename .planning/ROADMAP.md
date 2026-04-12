@@ -78,7 +78,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Tapping the center of the reader toggles immersive mode; reading progress auto-saves on page turn (debounced 2s) and flushes on `AppLifecycleState.paused`
 **Plans**: 5 plans (4 waves)
 Plans:
-- [ ] 03-01-PLAN.md — Sentence data model + SentenceSplitter (TDD)
+- [x] 03-01-PLAN.md — Sentence data model + SentenceSplitter (TDD)
 - [ ] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
 - [ ] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
 - [ ] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)

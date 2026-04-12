@@ -45,7 +45,7 @@ Reading experience with sentence-span rendering baked in from day one.
 - [ ] **RDR-01**: Opening a book loads its chapter list and resumes the user's last reading position (or start of book if first open)
 - [ ] **RDR-02**: Reader renders chapters as a `PageView` of paginated content — one chapter per page run, not a monolithic scroll
 - [ ] **RDR-03**: Chapter text is rendered via per-paragraph `RichText` inside a `ListView.builder` with `RepaintBoundary` around each paragraph
-- [ ] **RDR-04**: Every visible paragraph is composed of one `TextSpan` per `Sentence`, from a shared `Sentence` data model (sentence-span rendering is the permanent reader architecture, not a Phase 5 retrofit)
+- [x] **RDR-04**: Every visible paragraph is composed of one `TextSpan` per `Sentence`, from a shared `Sentence` data model (sentence-span rendering is the permanent reader architecture, not a Phase 5 retrofit)
 - [ ] **RDR-05**: `Semantics` is applied at the paragraph level so VoiceOver / TalkBack read paragraphs, not sentence-by-sentence
 - [ ] **RDR-06**: User can change font size via a slider (12–28pt) and see the change apply immediately
 - [ ] **RDR-07**: User can pick a font family from 3–4 bundled options
@@ -202,7 +202,7 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | RDR-01 | Phase 3 | Pending |
 | RDR-02 | Phase 3 | Pending |
 | RDR-03 | Phase 3 | Pending |
-| RDR-04 | Phase 3 | Pending |
+| RDR-04 | Phase 3 | Complete |
 | RDR-05 | Phase 3 | Pending |
 | RDR-06 | Phase 3 | Pending |
 | RDR-07 | Phase 3 | Pending |
