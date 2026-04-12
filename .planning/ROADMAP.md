@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Scaffold & Compliance Foundation** - Signed app scaffold with routing, DB, themes, and all store-compliance groundwork (completed 2026-04-11)
 - [ ] **Phase 2: Library & EPUB Import** - Import EPUBs, parse them into a rich block IR, browse in a responsive grid
-- [ ] **Phase 3: Reader with Sentence-Span Architecture** - Read any EPUB on phone or tablet with per-sentence TextSpan rendering from day one
+- [x] **Phase 3: Reader with Sentence-Span Architecture** - Read any EPUB on phone or tablet with per-sentence TextSpan rendering from day one (completed 2026-04-12)
 - [ ] **Phase 4: TTS Engine & Playback Foundation** - Kokoro-82M on a worker isolate plays any chapter with background audio and lock-screen controls
 - [ ] **Phase 5: Sentence Highlighting & Two-Way Sync** - The currently-spoken sentence is highlighted and kept in view; tap a sentence to start TTS there
 - [ ] **Phase 6: Polish, Accessibility & Ship Readiness** - Bookmarks, sleep timer, settings, onboarding, accessibility, and multi-device matrix
@@ -82,7 +82,7 @@ Plans:
 - [x] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
 - [x] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
 - [x] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)
-- [ ] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification
+- [x] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification
 **UI hint**: yes
 
 ### Phase 4: TTS Engine & Playback Foundation
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Compliance Foundation | 9/9 | Complete   | 2026-04-11 |
 | 2. Library & EPUB Import | 0/TBD | Not started | - |
-| 3. Reader with Sentence-Span Architecture | 0/5 | Not started | - |
+| 3. Reader with Sentence-Span Architecture | 5/5 | Complete   | 2026-04-12 |
 | 4. TTS Engine & Playback Foundation | 0/TBD | Not started | - |
 | 5. Sentence Highlighting & Two-Way Sync | 0/TBD | Not started | - |
 | 6. Polish, Accessibility & Ship Readiness | 0/TBD | Not started | - |

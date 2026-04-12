@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-04-12T14:12:19.658Z"
+status: verifying
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-04-12T17:24:57.479Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 22
-  completed_plans: 21
-  percent: 95
+  completed_plans: 22
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 Phase: 03 (reader-with-sentence-span-architecture) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-12
 
 Progress: [░░░░░░░░░░] 0%
@@ -65,6 +65,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P02 | 5m | 2 tasks | 7 files |
 | Phase 03 P03 | 3min | 2 tasks | 4 files |
 | Phase 03 P04 | 8min | 2 tasks | 5 files |
+| Phase 03 P05 | 15min | 4 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,9 @@ Recent decisions affecting current work:
 - [Phase 03]: ImageExtractor uses basename + canonicalize double defense for path traversal (T-03-03)
 - [Phase 03]: Headings use header: true in Semantics for screen reader heading announcement; ImageBlockWidget placeholder fallback on missing images; ordered/unordered ListItems both use bullet
 - [Phase 03]: readerProvider is auto-disposing family provider keyed by bookId; Image extraction always runs idempotent with try-catch; Widget tests use tester.runAsync for Drift FFI resolution
+- [Phase 03]: Eager DB capture in ReadingProgressNotifier.build() for safe Riverpod 3 disposal flush
+- [Phase 03]: Chapter swipe records progress at offset 0.0 so position persists after navigation without scrolling
+- [Phase 03]: Collapsible sidebar state independent of immersive mode on tablet
 
 ### Pending Todos
 
@@ -114,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T14:12:19.656Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-04-12T17:24:57.476Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
