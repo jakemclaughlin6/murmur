@@ -79,7 +79,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans (4 waves)
 Plans:
 - [x] 03-01-PLAN.md — Sentence data model + SentenceSplitter (TDD)
-- [ ] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
+- [x] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
 - [ ] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
 - [ ] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)
 - [ ] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification

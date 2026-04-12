@@ -47,12 +47,12 @@ Reading experience with sentence-span rendering baked in from day one.
 - [ ] **RDR-03**: Chapter text is rendered via per-paragraph `RichText` inside a `ListView.builder` with `RepaintBoundary` around each paragraph
 - [x] **RDR-04**: Every visible paragraph is composed of one `TextSpan` per `Sentence`, from a shared `Sentence` data model (sentence-span rendering is the permanent reader architecture, not a Phase 5 retrofit)
 - [ ] **RDR-05**: `Semantics` is applied at the paragraph level so VoiceOver / TalkBack read paragraphs, not sentence-by-sentence
-- [ ] **RDR-06**: User can change font size via a slider (12–28pt) and see the change apply immediately
-- [ ] **RDR-07**: User can pick a font family from 3–4 bundled options
+- [x] **RDR-06**: User can change font size via a slider (12–28pt) and see the change apply immediately
+- [x] **RDR-07**: User can pick a font family from 3–4 bundled options
 - [ ] **RDR-08**: User can switch between light, sepia, dark, and OLED-black reader themes and the change persists
 - [ ] **RDR-09**: Tablet layouts show a persistent chapter sidebar (~300px) on the left; phone layouts show a slide-over chapter drawer opened from the app bar
 - [ ] **RDR-10**: User can tap a chapter in the sidebar/drawer to jump; the current chapter is visually highlighted
-- [ ] **RDR-11**: Reading progress is saved to Drift DB on page turn, debounced at 2 seconds, and correctly resumes on reopen
+- [x] **RDR-11**: Reading progress is saved to Drift DB on page turn, debounced at 2 seconds, and correctly resumes on reopen
 - [ ] **RDR-12**: Tapping the center of the reader toggles app-bar and playback-bar chrome (immersive mode)
 - [ ] **RDR-13**: User can tap a ribbon icon to save the current position as a bookmark and see it listed in the chapter panel/drawer
 - [ ] **RDR-14**: Tapping a bookmark jumps to its saved position
@@ -204,12 +204,12 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | RDR-03 | Phase 3 | Pending |
 | RDR-04 | Phase 3 | Complete |
 | RDR-05 | Phase 3 | Pending |
-| RDR-06 | Phase 3 | Pending |
-| RDR-07 | Phase 3 | Pending |
+| RDR-06 | Phase 3 | Complete |
+| RDR-07 | Phase 3 | Complete |
 | RDR-08 | Phase 3 | Pending |
 | RDR-09 | Phase 3 | Pending |
 | RDR-10 | Phase 3 | Pending |
-| RDR-11 | Phase 3 | Pending |
+| RDR-11 | Phase 3 | Complete |
 | RDR-12 | Phase 3 | Pending |
 | RDR-13 | Phase 6 | Pending |
 | RDR-14 | Phase 6 | Pending |
