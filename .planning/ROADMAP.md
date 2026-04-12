@@ -83,7 +83,7 @@ Plans:
 - [x] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
 - [x] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)
 - [x] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification
-- [ ] 03-06-PLAN.md — Gap closure: EPUB image path resolution fix + code review warnings (WR-01, WR-02, WR-03)
+- [x] 03-06-PLAN.md — Gap closure: EPUB image path resolution fix + code review warnings (WR-01, WR-02, WR-03)
 **UI hint**: yes
 
 ### Phase 4: TTS Engine & Playback Foundation

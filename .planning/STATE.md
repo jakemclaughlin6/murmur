@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-04-12T17:45:51.395Z"
+status: executing
+stopped_at: Completed 03-06-PLAN.md
+last_updated: "2026-04-12T18:38:15.972Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 22
-  completed_plans: 22
+  total_plans: 23
+  completed_plans: 23
   percent: 100
 ---
 
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 03 (reader-with-sentence-span-architecture) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
 Last activity: 2026-04-12
 
 Progress: [░░░░░░░░░░] 0%
@@ -67,6 +67,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P03 | 3min | 2 tasks | 4 files |
 | Phase 03 P04 | 8min | 2 tasks | 5 files |
 | Phase 03 P05 | 15min | 4 tasks | 8 files |
+| Phase 03 P06 | 5min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,7 @@ Recent decisions affecting current work:
 - [Phase 03]: Eager DB capture in ReadingProgressNotifier.build() for safe Riverpod 3 disposal flush
 - [Phase 03]: Chapter swipe records progress at offset 0.0 so position persists after navigation without scrolling
 - [Phase 03]: Collapsible sidebar state independent of immersive mode on tablet
+- [Phase 03]: p.normalize only collapses internal ../ on POSIX; basename fallback is the true safety net for relative EPUB image paths
 
 ### Pending Todos
 
@@ -119,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T17:24:57.476Z
-Stopped at: Completed 03-05-PLAN.md
+Last session: 2026-04-12T18:38:15.970Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None
