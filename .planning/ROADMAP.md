@@ -76,7 +76,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-05-PLAN.md — ImportNotifier + Android intent filter + iOS doc types + /reader/:bookId stub + Share intent listener
 - [x] 02-06-PLAN.md — LibraryNotifier (sort/search) + BookCard + BookCardShimmer
 - [x] 02-07-PLAN.md — LibraryScreen composition (SliverAppBar + search + chips + grid + context sheet + empty states)
-- [ ] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
+- [x] 02-08-PLAN.md — 15-EPUB corpus sweep + persistence round-trip + device verification checkpoint
 **UI hint**: yes
 
 ### Phase 4: TTS Engine & Playback Foundation
