@@ -1,111 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/theme/clay_colors.dart';
+import 'providers/font_settings_provider.dart';
+import 'providers/reader_provider.dart';
+import 'widgets/chapter_page.dart';
 
-/// Reader screen — serves two jobs in Phase 2:
+/// Full reader screen replacing the Phase 2 stub.
 ///
-/// 1. As the `/reader` shell-tab placeholder (no [bookId]): renders a short
-///    Middlemarch passage in Literata to exercise the reader font/theme
-///    primitives landed in Phase 1. This is the pre-existing behavior and
-///    the navigation_test widget test asserts against it via the
-///    `reader-screen` key.
+/// Structure (D-05): Horizontal PageView of chapters. Each page is a
+/// ChapterPage with a vertical ListView of rendered blocks.
 ///
-/// 2. As the `/reader/:bookId` top-level route (with [bookId]): renders a
-///    Phase 2 stub that Plan 07's book cards can navigate into. The real
-///    reader lands in Phase 3; this stub just proves the route wiring.
-///
-/// Splitting these into two widgets would be marginally cleaner but would
-/// fork the test infrastructure for no gain — Phase 3 will replace both
-/// render paths with the sentence-span RichText pipeline anyway.
-class ReaderScreen extends StatelessWidget {
+/// Plan 05 adds: chapter sidebar/drawer, typography sheet, immersive mode,
+/// debounced progress save. This plan delivers the core reading surface.
+class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, this.bookId});
-
-  /// When non-null, render the Phase 2 "Book #$bookId" stub instead of the
-  /// Phase 1 sample passage. Plan 07 will pass this via
-  /// `context.go('/reader/$bookId')`.
   final int? bookId;
 
-  // D-12: "a single sample paragraph rendered via RichText in the currently
-  // selected reader font and theme" — Claude's discretion on text choice.
-  // Middlemarch opening (public domain) is under 150 words and shows off the
-  // serif family's quotation marks, small caps, and hyphenation behavior.
-  static const _samplePassage =
-      'Miss Brooke had that kind of beauty which seems to be thrown into '
-      'relief by poor dress. Her hand and wrist were so finely formed that '
-      'she could wear sleeves not less bare of style than those in which '
-      'the Blessed Virgin appeared to Italian painters; and her profile as '
-      'well as her stature and bearing seemed to gain the more dignity from '
-      'her plain garments, which by the side of provincial fashion gave her '
-      'the impressiveness of a fine quotation from the Bible,—or from one '
-      'of our elder poets,—in a paragraph of to-day\'s newspaper.';
+  @override
+  ConsumerState<ReaderScreen> createState() => _ReaderScreenState();
+}
+
+class _ReaderScreenState extends ConsumerState<ReaderScreen> {
+  PageController? _pageController;
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (bookId != null) {
-      return _buildBookStub(context, bookId!);
+    // If no bookId, show placeholder (shell tab route).
+    // Key('reader-screen') is asserted by navigation_test.dart.
+    if (widget.bookId == null) {
+      return Scaffold(
+        key: const Key('reader-screen'),
+        appBar: AppBar(title: const Text('Reader')),
+        body: const Center(child: Text('Open a book from the Library')),
+      );
     }
-    return _buildSamplePassage(context);
-  }
 
-  Widget _buildBookStub(BuildContext context, int id) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
-    final Color bg = brightness == Brightness.dark
-        ? ClayColors.darkBackground
-        : ClayColors.background;
-    final Color fg = brightness == Brightness.dark
-        ? ClayColors.darkTextPrimary
-        : ClayColors.textPrimary;
+    final readerAsync = ref.watch(readerProvider(widget.bookId!));
+    final fontSizeAsync = ref.watch(fontSizeControllerProvider);
+    final fontFamilyAsync = ref.watch(fontFamilyControllerProvider);
 
-    return Scaffold(
-      key: const Key('reader-screen-book'),
-      backgroundColor: bg,
-      appBar: AppBar(
-        title: const Text('Reader'),
-        backgroundColor: bg,
-        foregroundColor: fg,
+    return readerAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'Book #$id — Phase 3 will render this',
-            style: theme.textTheme.bodyLarge?.copyWith(color: fg),
-            textAlign: TextAlign.center,
-          ),
-        ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(title: const Text('Reader')),
+        body: Center(child: Text('Error loading book: $error')),
       ),
-    );
-  }
+      data: (readerState) {
+        final fontSize = fontSizeAsync.value ?? 18.0;
+        final fontFamily = fontFamilyAsync.value ?? 'Literata';
+        final theme = Theme.of(context);
+        final textColor = theme.colorScheme.onSurface;
+        final mutedColor =
+            theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
-  Widget _buildSamplePassage(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary =
-        theme.textTheme.bodyLarge?.color ?? theme.colorScheme.onSurface;
+        // Initialize PageController at saved chapter (D-13)
+        _pageController ??= PageController(
+          initialPage: readerState.currentChapterIndex,
+          keepPage: true,
+        );
 
-    return Scaffold(
-      key: const Key('reader-screen'),
-      appBar: AppBar(
-        title: const Text('Reader'),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: SingleChildScrollView(
-            child: RichText(
-              text: TextSpan(
-                text: _samplePassage,
-                style: TextStyle(
-                  fontFamily: 'Literata',
-                  fontSize: 18,
-                  height: 1.6,
-                  color: primary,
-                ),
-              ),
+        return Scaffold(
+          key: const Key('reader-screen-book'),
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: Text(
+              readerState.book.title,
+              overflow: TextOverflow.ellipsis,
             ),
+            // Plan 05 adds: typography icon, chapter nav icon
           ),
-        ),
-      ),
+          body: PageView.builder(
+            controller: _pageController,
+            itemCount: readerState.chapters.length,
+            onPageChanged: (index) {
+              ref
+                  .read(readerProvider(widget.bookId!).notifier)
+                  .setChapter(index);
+            },
+            itemBuilder: (context, index) {
+              final blocks = readerState.blocksForChapter(index);
+              return ChapterPage(
+                key: ValueKey('chapter-$index'),
+                blocks: blocks,
+                fontFamily: fontFamily,
+                fontSize: fontSize,
+                textColor: textColor,
+                mutedColor: mutedColor,
+                imagePathMap: readerState.imagePathMap,
+                initialOffsetFraction:
+                    index == readerState.currentChapterIndex
+                        ? readerState.initialOffsetFraction
+                        : null,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
