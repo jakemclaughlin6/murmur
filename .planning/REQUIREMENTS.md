@@ -42,8 +42,8 @@ EPUB import, persistence, and browsing. Responsive for phones + tablets.
 
 Reading experience with sentence-span rendering baked in from day one.
 
-- [ ] **RDR-01**: Opening a book loads its chapter list and resumes the user's last reading position (or start of book if first open)
-- [ ] **RDR-02**: Reader renders chapters as a `PageView` of paginated content — one chapter per page run, not a monolithic scroll
+- [x] **RDR-01**: Opening a book loads its chapter list and resumes the user's last reading position (or start of book if first open)
+- [x] **RDR-02**: Reader renders chapters as a `PageView` of paginated content — one chapter per page run, not a monolithic scroll
 - [x] **RDR-03**: Chapter text is rendered via per-paragraph `RichText` inside a `ListView.builder` with `RepaintBoundary` around each paragraph
 - [x] **RDR-04**: Every visible paragraph is composed of one `TextSpan` per `Sentence`, from a shared `Sentence` data model (sentence-span rendering is the permanent reader architecture, not a Phase 5 retrofit)
 - [x] **RDR-05**: `Semantics` is applied at the paragraph level so VoiceOver / TalkBack read paragraphs, not sentence-by-sentence
@@ -199,8 +199,8 @@ Every v1 requirement maps to exactly one phase. Populated by the roadmapper on 2
 | LIB-09 | Phase 2 | Complete |
 | LIB-10 | Phase 2 | Complete |
 | LIB-11 | Phase 2 | Complete |
-| RDR-01 | Phase 3 | Pending |
-| RDR-02 | Phase 3 | Pending |
+| RDR-01 | Phase 3 | Complete |
+| RDR-02 | Phase 3 | Complete |
 | RDR-03 | Phase 3 | Complete |
 | RDR-04 | Phase 3 | Complete |
 | RDR-05 | Phase 3 | Complete |

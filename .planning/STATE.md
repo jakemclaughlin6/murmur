@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-04-12T14:03:53.376Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-04-12T14:12:19.658Z"
 last_activity: 2026-04-12
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 22
-  completed_plans: 20
-  percent: 91
+  completed_plans: 21
+  percent: 95
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 03 (reader-with-sentence-span-architecture) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-04-12
 
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P01 | 5m | 1 tasks | 4 files |
 | Phase 03 P02 | 5m | 2 tasks | 7 files |
 | Phase 03 P03 | 3min | 2 tasks | 4 files |
+| Phase 03 P04 | 8min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,7 @@ Recent decisions affecting current work:
 - [Phase 03]: Drift import needs hide isNull, isNotNull in tests to avoid collision with matcher package
 - [Phase 03]: ImageExtractor uses basename + canonicalize double defense for path traversal (T-03-03)
 - [Phase 03]: Headings use header: true in Semantics for screen reader heading announcement; ImageBlockWidget placeholder fallback on missing images; ordered/unordered ListItems both use bullet
+- [Phase 03]: readerProvider is auto-disposing family provider keyed by bookId; Image extraction always runs idempotent with try-catch; Widget tests use tester.runAsync for Drift FFI resolution
 
 ### Pending Todos
 
@@ -112,6 +114,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12T14:03:53.374Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-04-12T14:12:19.656Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
