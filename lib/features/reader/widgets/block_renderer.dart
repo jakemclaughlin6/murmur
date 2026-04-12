@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../core/epub/block.dart';
 import '../../../core/text/sentence_splitter.dart';
@@ -160,7 +161,9 @@ class _ImageBlockWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localPath = imagePathMap?[href];
+    final localPath = imagePathMap?[href]
+        ?? imagePathMap?[p.normalize(href)]
+        ?? imagePathMap?[p.basename(href)];
 
     if (localPath != null && File(localPath).existsSync()) {
       return Semantics(

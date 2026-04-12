@@ -69,6 +69,18 @@ class ImageExtractor {
       if (segments.length > 1) {
         mapping[p.joinAll(segments.sublist(1))] = outputPath;
       }
+      // Map additional sub-paths for deeply nested images so that relative
+      // hrefs at varying depths resolve (e.g., 'content/images/fig.png').
+      for (var i = 2; i < segments.length; i++) {
+        final subPath = p.joinAll(segments.sublist(i));
+        mapping.putIfAbsent(subPath, () => outputPath);
+      }
+      // Map normalized form to handle relative hrefs with '../' segments
+      // (e.g., '../images/fig.png' -> 'images/fig.png' after normalize).
+      final normalized = p.normalize(epubHref);
+      if (normalized != epubHref && normalized != filename) {
+        mapping.putIfAbsent(normalized, () => outputPath);
+      }
     }
 
     return mapping;

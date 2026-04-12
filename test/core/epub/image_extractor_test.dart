@@ -35,6 +35,40 @@ void main() {
     });
   });
 
+  group('Relative path normalization', () {
+    test('p.normalize collapses ./ segments and internal ../ for image resolution', () {
+      // p.normalize cleans up redundant separators and ./ prefixes.
+      expect(p.normalize('./images/photo.png'), 'images/photo.png');
+      // Leading ../ is preserved on POSIX (no base to resolve against),
+      // but internal ../ within an absolute-ish EPUB content path collapses:
+      expect(p.normalize('OEBPS/text/../images/fig.png'), 'OEBPS/images/fig.png');
+      // Already clean paths are unchanged.
+      expect(p.normalize('images/fig.png'), 'images/fig.png');
+      expect(p.normalize('OEBPS/images/fig.png'), 'OEBPS/images/fig.png');
+    });
+
+    test('multi-level sub-path stripping covers deeply nested hrefs', () {
+      // Simulates the multi-level stripping loop in extractImages.
+      const epubHref = 'OEBPS/content/images/fig1.png';
+      final segments = p.split(epubHref);
+      // segments: ['OEBPS', 'content', 'images', 'fig1.png']
+      expect(segments.length, 4);
+
+      // sublist(1) -> content/images/fig1.png (existing code)
+      expect(p.joinAll(segments.sublist(1)), 'content/images/fig1.png');
+      // sublist(2) -> images/fig1.png (new loop)
+      expect(p.joinAll(segments.sublist(2)), 'images/fig1.png');
+      // sublist(3) -> fig1.png (new loop, same as basename)
+      expect(p.joinAll(segments.sublist(3)), 'fig1.png');
+    });
+
+    test('basename fallback resolves when only filename matches', () {
+      // Verifies the basename fallback used in _ImageBlockWidget.
+      const href = '../images/test.png';
+      expect(p.basename(href), 'test.png');
+    });
+  });
+
   group('Path traversal protection', () {
     test('p.basename strips directory traversal components', () {
       // Verifies the sanitization logic used in extractImages.
