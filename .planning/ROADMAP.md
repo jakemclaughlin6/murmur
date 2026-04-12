@@ -76,13 +76,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can jump to any chapter via a persistent sidebar on tablet or a slide-over drawer on phone, with the current chapter visually highlighted
   4. VoiceOver and TalkBack read paragraphs as whole paragraphs (not sentence-by-sentence) because `Semantics` wraps each paragraph block
   5. Tapping the center of the reader toggles immersive mode; reading progress auto-saves on page turn (debounced 2s) and flushes on `AppLifecycleState.paused`
-**Plans**: 5 plans (4 waves)
+**Plans**: 6 plans (4 waves + 1 gap closure)
 Plans:
 - [x] 03-01-PLAN.md — Sentence data model + SentenceSplitter (TDD)
 - [x] 03-02-PLAN.md — Drift reading progress queries + font settings providers + image extractor
 - [x] 03-03-PLAN.md — Block-to-widget renderer + ParagraphWidget with per-sentence TextSpans
 - [x] 03-04-PLAN.md — ReaderScreen + ChapterPage + ReaderNotifier (PageView composition)
 - [x] 03-05-PLAN.md — Chapter sidebar/drawer + typography sheet + immersive mode + progress save + device verification
+- [ ] 03-06-PLAN.md — Gap closure: EPUB image path resolution fix + code review warnings (WR-01, WR-02, WR-03)
 **UI hint**: yes
 
 ### Phase 4: TTS Engine & Playback Foundation
@@ -142,7 +143,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Compliance Foundation | 9/9 | Complete   | 2026-04-11 |
 | 2. Library & EPUB Import | 0/TBD | Not started | - |
-| 3. Reader with Sentence-Span Architecture | 5/5 | Complete   | 2026-04-12 |
+| 3. Reader with Sentence-Span Architecture | 5/6 | Gap closure | 2026-04-12 |
 | 4. TTS Engine & Playback Foundation | 0/TBD | Not started | - |
 | 5. Sentence Highlighting & Two-Way Sync | 0/TBD | Not started | - |
 | 6. Polish, Accessibility & Ship Readiness | 0/TBD | Not started | - |
