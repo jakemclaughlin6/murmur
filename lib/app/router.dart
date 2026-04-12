@@ -12,6 +12,21 @@ part 'router.g.dart';
 GoRouter router(Ref ref) {
   return GoRouter(
     initialLocation: '/library',
+    // Redirect unknown URIs to /library. Android VIEW/SEND intents push
+    // content:// or file:// URIs into Flutter's route information channel;
+    // GoRouter sees those as deep-link paths and fails with "no routes for
+    // location". We handle share/open-in intents ourselves via
+    // receive_sharing_intent (ShareIntentListener), so any URI that
+    // doesn't match a known prefix is safely sent to /library.
+    redirect: (context, state) {
+      final loc = state.uri.path;
+      if (loc.startsWith('/library') ||
+          loc.startsWith('/reader') ||
+          loc.startsWith('/settings')) {
+        return null; // known route, no redirect
+      }
+      return '/library';
+    },
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
