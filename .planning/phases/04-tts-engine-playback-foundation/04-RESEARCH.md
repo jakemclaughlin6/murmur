@@ -557,22 +557,22 @@ See Patterns 1–8 above. All reference implementations are either:
 | A6 | `audio_service` 0.18.18 still compatible with just_audio 0.10.5 in 2026 | §Version Compatibility | Low. Both active packages, well-known pairing. [VERIFIED: CLAUDE.md version compat table] |
 | A7 | The pinned GitHub Release URL for kokoro-int8-en-v0_19.tar.bz2 is stable and won't 404 | §Download URL | Moderate. Mitigation: user-facing retry + detailed error. Self-hosted mirror explicitly deferred (D-04). |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Does `sherpa_onnx` 1.12.36 expose ANY cancellation hook?**
+1. **Does `sherpa_onnx` 1.12.36 expose ANY cancellation hook?** — RESOLVED via 04-00 Task 3 device spike; fallback "discard-on-completion" path committed in 04-04 must_haves; 04-00 Task 3 gate re-opens D-12 if a primitive is found.
    - What we know: upstream `flutter-examples/tts` does not demonstrate one. `generateWithConfig` appears synchronous.
    - What's unclear: is there a newer method signature (`generateWithCallback` is mentioned for TTS-13) that supports early-exit?
    - Recommendation: Wave 0 spike writes a no-UI test that calls `generateWithConfig` for a long (~20-word) sentence and attempts to interrupt. If impossible, lock D-12's fallback as v1 behavior.
 
-2. **Preview sentence exact wording**
+2. **Preview sentence exact wording** — RESOLVED: preview sentence committed to `ModelManifest.previewSentence` in 04-01.
    - CONTEXT says "TBD during Phase 4 build."
    - Recommendation: planner picks one, commits to source with a comment flagging it's reviewable. Candidate: "Welcome to murmur. This is how I sound reading your books." (14 words, brand-forward, mix of short + long vowels for voice differentiation.)
 
-3. **Notification channel name + icon**
+3. **Notification channel name + icon** — RESOLVED: channel name `Playback`, icon `mipmap/ic_launcher` in 04-08 Task 1.
    - Required by audio_service on Android.
    - Recommendation: `'Playback'` channel name, `@mipmap/ic_launcher` icon (existing from Phase 1). Planner confirms during plan.
 
-4. **On-device cold-start latency target on low-end Android**
+4. **On-device cold-start latency target on low-end Android** — RESOLVED: measured in 04-09 Section B via `tool/measure_tts_latency.dart`.
    - TTS-10 says <300ms on mid-range. Budget for entry-level phones is unspecified.
    - Recommendation: measure during spike; if entry-level blows past 500ms, document in PROJECT.md and move on — spec says "mid-range."
 

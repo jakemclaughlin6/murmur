@@ -96,7 +96,18 @@ Plans:
   3. User can play / pause, scrub within the chapter, change speed (0.75×–2×), skip forward one sentence, skip back one sentence, pick from ~10 curated English voices with <2s previews, and set per-book voice and speed overrides
   4. Audio keeps playing with the app backgrounded on both iOS and Android, the lock screen shows book + chapter metadata with play/pause and next-chapter controls, and an incoming call or Siri pauses murmur and resumes cleanly on interruption end
   5. Reader and TTS coordinate through exactly one shared `playbackStateProvider` — no direct feature-to-feature imports — and `just_audio.setSpeed()` is the single owner of runtime speed (Sherpa `length_scale` is fixed at 1.0, asserted in code)
-**Plans**: TBD
+**Plans**: 10 plans (7 waves)
+Plans:
+- [ ] 04-00-PLAN.md — Wave 0 spike: hear one sentence on physical Android + deps pinned + Kokoro assets bundled
+- [ ] 04-01-PLAN.md — KokoroPaths + asset copy + ModelManifest + Drift schema v3 (voice_id/playback_speed)
+- [ ] 04-02-PLAN.md — Resumable SHA-256-verified model download + tar.bz2 installer + first-launch modal
+- [ ] 04-03-PLAN.md — wavWrap helper + 500+ fixture SentenceSplitter corpus with Phase 3 regression guard
+- [ ] 04-04-PLAN.md — TTS worker isolate protocol + SherpaTtsEngine + LRU cache + FakeTtsEngine test double
+- [ ] 04-05-PLAN.md — playbackStateProvider seam + architecture boundary tests (feature isolation + network + sherpa + analytics-banned)
+- [ ] 04-06-PLAN.md — TtsQueue (pre-synth + ring buffer) + JustAudioPlayerHandle + provider wiring
+- [ ] 04-07-PLAN.md — PlaybackBar + voice picker (11 voices + previews) + speed picker + per-book overrides + reader/settings integration
+- [ ] 04-08-PLAN.md — audio_service handler + audio_session speech category + interruption handling + manifest/Info.plist compliance
+- [ ] 04-09-PLAN.md — Timeline latency instrumentation + device UAT pack + manual checkpoint
 **UI hint**: yes
 
 ### Phase 5: Sentence Highlighting & Two-Way Sync
@@ -144,7 +155,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Scaffold & Compliance Foundation | 9/9 | Complete   | 2026-04-11 |
 | 2. Library & EPUB Import | 0/TBD | Not started | - |
 | 3. Reader with Sentence-Span Architecture | 5/6 | Gap closure | 2026-04-12 |
-| 4. TTS Engine & Playback Foundation | 0/TBD | Not started | - |
+| 4. TTS Engine & Playback Foundation | 0/10 | Not started | - |
 | 5. Sentence Highlighting & Two-Way Sync | 0/TBD | Not started | - |
 | 6. Polish, Accessibility & Ship Readiness | 0/TBD | Not started | - |
 | 7. Paid Distribution | 0/TBD | Not started | - |
