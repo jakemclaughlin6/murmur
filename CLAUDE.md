@@ -185,18 +185,27 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, or `.github/skills/` with a `SKILL.md` index file.
 <!-- GSD:skills-end -->
 
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
+## Workflow
 
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
+This project uses the **superpowers** skills. Invoke via the `Skill` tool — do not use GSD slash commands (legacy).
 
-Use these entry points:
-- `/gsd-quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd-debug` for investigation and bug fixing
-- `/gsd-execute-phase` for planned phase work
+**Start any non-trivial work with the right skill:**
+- New feature / design decision → `brainstorming` (produces a spec), then `writing-plans` (produces a plan), then `subagent-driven-development` or `executing-plans`
+- Bug / unexpected behavior → `systematic-debugging`
+- Implementing a feature or fix → `test-driven-development`
+- Before claiming work is done → `verification-before-completion`
+- Wrapping up a branch → `finishing-a-development-branch`
 
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
+**Trivial edits** (typo, one-line tweak, doc nit) can be made directly — skills are for multi-step work.
+
+**Planning artifacts live under `.planning/`** (legacy GSD tree, kept as reference):
+- `PROJECT.md`, `ROADMAP.md`, `REQUIREMENTS.md`, `STATE.md` — domain docs, still current
+- `phases/NN-*/` — completed phase summaries + research notes are the canonical record of prior decisions
+- `research/` — architecture / stack / pitfalls reference
+
+**New specs and plans go under `.planning/phases/NN-*/`** (not `docs/superpowers/`) to keep one source of truth. Use `SPEC.md` and `PLAN.md` as filenames.
+
+**Phase 4 (TTS) plans (`04-00-PLAN.md` … `04-09-PLAN.md`)** were written in GSD's XML task format before the superpowers migration. Treat them as detailed specs; when starting Phase 4 work, use `writing-plans` to consolidate them into one checkbox-driven `PLAN.md` (or work from them manually, one plan at a time).
 
 
 

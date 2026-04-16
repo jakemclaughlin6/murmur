@@ -3,6 +3,7 @@ flutter = "3.41.0"
 java = "17"
 yq = "latest"
 "android-sdk" = "16.0"
+just = "latest"
 
 [env]
 ANDROID_HOME = "{{ env.HOME }}/.local/share/mise/installs/android-sdk/16.0"
