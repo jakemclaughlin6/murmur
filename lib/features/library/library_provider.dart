@@ -25,6 +25,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/db/app_database_provider.dart';
+import '../tts/isolate/tts_cache.dart';
+import '../tts/isolate/tts_cache_provider.dart';
 
 part 'library_provider.g.dart';
 
@@ -188,6 +190,17 @@ class LibraryNotifier extends _$LibraryNotifier {
           ..where((b) => b.id.equals(bookId)))
         .getSingleOrNull();
     if (row == null) return;
+
+    // Best-effort TTS cache wipe (CD-02). Run before the DB delete so
+    // a mid-op crash leaves an orphan cache (disk bloat only) rather
+    // than a ghost cache for a recycled rowid.
+    try {
+      final cache = ref.read(ttsCacheProvider);
+      await cache.wipeBook(bookId.toString());
+    } catch (_) {
+      // Provider not overridden (uncommon test path) or wipe failed —
+      // non-fatal.
+    }
 
     await (db.delete(db.books)..where((b) => b.id.equals(bookId))).go();
 
