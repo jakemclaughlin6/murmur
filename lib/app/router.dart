@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -5,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../features/library/library_screen.dart';
 import '../features/reader/reader_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/tts/spike/spike_page.dart';
 
 part 'router.g.dart';
 
@@ -22,7 +24,8 @@ GoRouter router(Ref ref) {
       final loc = state.uri.path;
       if (loc.startsWith('/library') ||
           loc.startsWith('/reader') ||
-          loc.startsWith('/settings')) {
+          loc.startsWith('/settings') ||
+          (kDebugMode && loc.startsWith('/_spike'))) {
         return null; // known route, no redirect
       }
       return '/library';
@@ -70,6 +73,11 @@ GoRouter router(Ref ref) {
           return ReaderScreen(bookId: bookId);
         },
       ),
+      if (kDebugMode)
+        GoRoute(
+          path: '/_spike/tts',
+          builder: (_, __) => const SpikePage(),
+        ),
     ],
   );
 }
