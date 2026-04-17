@@ -41,6 +41,10 @@ dependencies:
   audio_session: ^0.2.3
   http: ^1.2.0
   crypto: ^3.0.5
+  # convert promoted from transitive (via crypto) to direct because
+  # lib/features/tts/model/model_downloader.dart imports AccumulatorSink
+  # for incremental SHA-256 hashing during streaming download.
+  convert: ^3.1.2
 
 dev_dependencies:
   flutter_test:
