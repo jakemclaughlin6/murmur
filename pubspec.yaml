@@ -33,6 +33,8 @@ dependencies:
   # (latest is 1.0.1 and the package is marked discontinued on pub.dev, replaced by
   # receive_sharing_intent). Switched to the maintained original package.
   receive_sharing_intent: ^1.8.1
+  # Phase 4 TTS engine + playback. http + crypto are single-use: one-time
+  # Kokoro model download on first launch only (see CLAUDE.md constraints).
   sherpa_onnx: 1.12.36          # EXACT pin — NOT caret. Patch cadence is fast.
   just_audio: ^0.10.5
   audio_service: ^0.18.18

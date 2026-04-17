@@ -19,8 +19,6 @@
            (Storage Access Framework) through file_picker's ACTION_OPEN_DOCUMENT,
            not via MediaStore. Declaring READ_MEDIA_AUDIO would be a false permission
            over-request and a Play Store data-access declaration we don't need.
-         - INTERNET: Phase 4 will add this for the one-time Kokoro model download.
-           Phase 1 has no network calls.
          See 01-RESEARCH.md §Example 4 critical note. -->
 
     <application
