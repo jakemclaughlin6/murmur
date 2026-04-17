@@ -20,6 +20,10 @@ import 'package:drift/drift.dart';
 /// - [readingProgressOffset] — null until Phase 3 records a 0.0–1.0 offset
 ///   within the current chapter. The exact reading position model is a
 ///   Phase 3 concern; this column is reserved space only.
+/// - [voiceId] — nullable; per-book voice override (CD-01, Phase 4 D-09).
+///   NULL = fall back to the shared_preferences global default.
+/// - [playbackSpeed] — nullable; per-book playback-speed override (PBK-04).
+///   NULL = use global default.
 @DataClassName('Book')
 class Books extends Table {
   IntColumn get id => integer().autoIncrement()();

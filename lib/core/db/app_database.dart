@@ -7,7 +7,9 @@ import 'tables/chapters_table.dart';
 
 part 'app_database.g.dart';
 
-/// Phase 2 schema v2: `books` + `chapters` tables per D-03, D-04, D-05.
+/// Schema v3: `books` + `chapters` tables. v3 extends `books` with
+/// per-book voice_id + playback_speed (Phase 4 CD-01) on top of the
+/// Phase 2 v2 baseline (D-03/D-04/D-05).
 ///
 /// Migration strategy (per D-04 — drift_dev `stepByStep` workflow is LOCKED):
 /// - Fresh installs start at schemaVersion=2 via [MigrationStrategy.onCreate]
