@@ -1,12 +1,8 @@
 // Spike-only: this file is scaffolding for Wave 0 on-device verification and
-// will be rewritten in Wave 1. Before promoting this logic to production,
-// replace `rootBundle.loadString('AssetManifest.json')` with the typed
-// `AssetManifest.loadFromAssetBundle(rootBundle)` API (Flutter 3.7+). The
-// JSON form is a soft-deprecated compat path.
-import 'dart:convert';
+// will be rewritten in Wave 1.
 import 'dart:io';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -24,12 +20,10 @@ Future<String> copyKokoroAssetsToSupportDir() async {
   final targetRoot = Directory(p.join(support.path, 'kokoro-en-v0_19'));
   await targetRoot.create(recursive: true);
 
-  final manifestJson = await rootBundle.loadString('AssetManifest.json');
-  final manifest = json.decode(manifestJson) as Map<String, dynamic>;
-
-  final kokoroPaths = manifest.keys
-      .where((k) => k.startsWith('assets/kokoro/'))
-      .where((k) => !k.endsWith('/'))
+  final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+  final kokoroPaths = manifest
+      .listAssets()
+      .where((k) => k.startsWith('assets/kokoro/') && !k.endsWith('/'))
       .toList();
 
   for (final assetPath in kokoroPaths) {
