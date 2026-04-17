@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart' show FlutterError;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,9 +77,8 @@ void main() {
     });
     final dir = tmp();
 
-    await copyBundledKokoroAssets(dir, bundle: bundle);
-    final modelFile =
-        File(p.join(dir.path, 'kokoro-en-v0_19', 'voices.bin'));
+    final paths = await copyBundledKokoroAssets(dir, bundle: bundle);
+    final modelFile = File(paths.voicesFile);
     final stat1 = modelFile.statSync();
     await Future<void>.delayed(const Duration(milliseconds: 20));
     await copyBundledKokoroAssets(dir, bundle: bundle);
@@ -97,7 +94,7 @@ void main() {
       'assets/kokoro/model.int8.onnx': _filled(1, 0xff),
     });
     final dir = tmp();
-    expect(
+    await expectLater(
       () => copyBundledKokoroAssets(dir, bundle: bundle),
       throwsA(isA<StateError>()),
     );
@@ -112,7 +109,7 @@ void main() {
     final blocker = File(p.join(blockerRoot.path, 'notadir'))
       ..writeAsBytesSync(<int>[0]);
     final bogusSupport = Directory(p.join(blocker.path, 'nested'));
-    expect(
+    await expectLater(
       () => copyBundledKokoroAssets(bogusSupport, bundle: bundle),
       throwsA(isA<KokoroAssetCopyException>()),
     );
