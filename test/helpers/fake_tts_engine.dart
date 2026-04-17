@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:murmur/features/tts/isolate/messages.dart';
+import 'package:murmur/features/tts/isolate/tts_worker_main.dart';
 
 /// Deterministic sine-wave TTS fake.
 ///
@@ -14,13 +15,13 @@ import 'package:murmur/features/tts/isolate/messages.dart';
 ///   message-loop wrapper schedules a pre-generate
 ///   `Future.delayed(synthDelay)` so cancel-discards tests have a race
 ///   window; production code has no such delay.
-class FakeTtsEngine implements TtsEngine {
+class FakeTtsEngine implements TtsEngine, SynthDelayed {
   FakeTtsEngine({
     this.synthDelay = Duration.zero,
     this.throwOnGenerate = false,
   });
 
-  final Duration synthDelay;
+  @override final Duration synthDelay;
   final bool throwOnGenerate;
 
   int? lastSid;
