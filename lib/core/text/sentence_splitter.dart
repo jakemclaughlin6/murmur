@@ -66,7 +66,13 @@ class SentenceSplitter {
 
         // It's a sentence boundary on period.
         i++;
+        final quotedPeriod = _consumedQuote(trimmed, i);
         i = _consumeClosingQuotes(trimmed, i);
+        if (quotedPeriod && _nextNonSpaceIsLower(trimmed, i)) {
+          // Dialogue tag continuation like `"Yes." he said.` — the quoted
+          // period is mid-sentence, not a true boundary.
+          continue;
+        }
         i = _consumeTrailingWhitespace(trimmed, i);
         sentences.add(Sentence(_trimTrailing(trimmed.substring(start, i))));
         start = i;
@@ -74,9 +80,14 @@ class SentenceSplitter {
       }
 
       if (char == '!' || char == '?') {
-        // Always a sentence boundary.
+        // Always a sentence boundary, UNLESS the terminal sits inside a quote
+        // and is followed by a lowercase dialogue tag (`"Stop!" he shouted.`).
         i++;
+        final quoted = _consumedQuote(trimmed, i);
         i = _consumeClosingQuotes(trimmed, i);
+        if (quoted && _nextNonSpaceIsLower(trimmed, i)) {
+          continue;
+        }
         i = _consumeTrailingWhitespace(trimmed, i);
         sentences.add(Sentence(_trimTrailing(trimmed.substring(start, i))));
         start = i;
@@ -176,4 +187,31 @@ class SentenceSplitter {
 
   bool _isUpperCase(int codeUnit) =>
       codeUnit >= 0x41 && codeUnit <= 0x5A; // 'A'-'Z'
+
+  bool _isLowerCase(int codeUnit) =>
+      codeUnit >= 0x61 && codeUnit <= 0x7A; // 'a'-'z'
+
+  /// Peeks whether the character at [index] is a closing quote that would
+  /// be consumed by [_consumeClosingQuotes].
+  bool _consumedQuote(String text, int index) {
+    if (index >= text.length) return false;
+    final c = text[index];
+    return c == '"' ||
+        c == '\u201D' ||
+        c == "'" ||
+        c == '\u2019' ||
+        c == ')';
+  }
+
+  /// Returns true if the next non-space character after [index] is a
+  /// lowercase ASCII letter. Used to detect dialogue-tag continuations
+  /// like `"Stop!" he shouted.` where the terminal is not a true boundary.
+  bool _nextNonSpaceIsLower(String text, int index) {
+    var j = index;
+    while (j < text.length && text[j] == ' ') {
+      j++;
+    }
+    if (j >= text.length) return false;
+    return _isLowerCase(text.codeUnitAt(j));
+  }
 }
