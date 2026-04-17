@@ -8,6 +8,7 @@ import 'app/app.dart';
 import 'core/crash/crash_logger.dart';
 import 'features/library/import_picker.dart' as import_picker;
 import 'features/library/import_picker_provider.dart';
+import 'features/tts/isolate/tts_cache_provider.dart';
 
 Future<void> main() async {
   // D-10: runZonedGuarded wraps everything so async errors outside the widget
@@ -34,6 +35,11 @@ Future<void> main() async {
       return true; // marked as handled; prevents hard crash in release builds
     };
 
+    final bootstrapContainer = ProviderContainer();
+    final ttsCache =
+        await bootstrapContainer.read(ttsCacheAsyncProvider.future);
+    bootstrapContainer.dispose();
+
     runApp(
       ProviderScope(
         overrides: [
@@ -44,6 +50,7 @@ Future<void> main() async {
           importPickerCallbackProvider.overrideWithValue(
             (ref) => import_picker.pickAndImportEpubs(ref),
           ),
+          ttsCacheProvider.overrideWithValue(ttsCache),
         ],
         child: const MurmurApp(),
       ),
