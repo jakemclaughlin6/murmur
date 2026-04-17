@@ -54,7 +54,7 @@ final class LibraryNotifierProvider
   LibraryNotifier create() => LibraryNotifier();
 }
 
-String _$libraryNotifierHash() => r'51f9bee303facc019084e8e424bb650d74279d60';
+String _$libraryNotifierHash() => r'4ca8f4ec9d94f7e08f689d569ff482292ff30259';
 
 /// Reactive library state — watches the Drift `books` table and emits
 /// a [LibraryState] every time either the underlying table changes OR

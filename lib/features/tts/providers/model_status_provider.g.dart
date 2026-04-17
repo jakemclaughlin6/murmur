@@ -34,7 +34,7 @@ final class ModelStatusNotifierProvider
 }
 
 String _$modelStatusNotifierHash() =>
-    r'e9f28f5d3e4ed55779db62420eb739bd7697356b';
+    r'3dd751531c50b83d5becf071618214b46ae9534d';
 
 abstract class _$ModelStatusNotifier extends $AsyncNotifier<ModelStatus> {
   FutureOr<ModelStatus> build();
