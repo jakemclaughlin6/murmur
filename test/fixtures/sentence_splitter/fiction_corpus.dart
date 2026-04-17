@@ -22,8 +22,8 @@
 ///    treats each terminal independently; fixtures reflect that.
 ///  - real prose from Project Gutenberg (public domain)
 ///
-/// Source attribution format: "PG #<work-id> ch.<n>" for Gutenberg,
-/// "synthetic" for constructed edge cases.
+/// Source attribution format: `PG #WORK ch.N` for Gutenberg works,
+/// `synthetic` for constructed edge cases.
 library;
 
 class SplitCase {
