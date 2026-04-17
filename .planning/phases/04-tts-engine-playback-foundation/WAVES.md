@@ -61,8 +61,10 @@
 
 ## Wave 2 — Isolate protocol + PlaybackState seam
 
-**Status:** BLOCKED (on Wave 1)
-**Legacy specs:** `04-04-PLAN.md`, `04-05-PLAN.md`
+**Status:** COMPLETE (2026-04-17)
+**Legacy specs:** `04-04-PLAN.md`, `04-05-PLAN.md` (consolidated into `PLAN.md`)
+**Current plan:** `PLAN.md` (this directory) — 11 checkbox-driven tasks
+**Summary:** `04-02-SUMMARY.md`
 **Requirements covered:** TTS-05, TTS-07 (cache), TTS-09, PBK-08
 
 **Scope preview:**
@@ -77,7 +79,7 @@
 
 ## Wave 3 — Queue + just_audio player
 
-**Status:** BLOCKED (on Wave 2)
+**Status:** BLOCKED (on Wave 2 main.dart cache wiring)
 **Legacy spec:** `04-06-PLAN.md`
 **Requirements covered:** TTS-05, TTS-07, TTS-08, TTS-10
 
