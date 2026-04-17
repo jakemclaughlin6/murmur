@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,6 +38,10 @@ class AppDatabase extends _$AppDatabase {
           from1To2: (Migrator m, Schema2 schema) async {
             await m.createTable(schema.books);
             await m.createTable(schema.chapters);
+          },
+          from2To3: (Migrator m, Schema3 schema) async {
+            await m.addColumn(schema.books, schema.books.voiceId);
+            await m.addColumn(schema.books, schema.books.playbackSpeed);
           },
         ),
         // SQLite ships with foreign-key enforcement disabled by default.

@@ -105,6 +105,28 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
         type: DriftSqlType.double,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _voiceIdMeta = const VerificationMeta(
+    'voiceId',
+  );
+  @override
+  late final GeneratedColumn<String> voiceId = GeneratedColumn<String>(
+    'voice_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _playbackSpeedMeta = const VerificationMeta(
+    'playbackSpeed',
+  );
+  @override
+  late final GeneratedColumn<double> playbackSpeed = GeneratedColumn<double>(
+    'playback_speed',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -116,6 +138,8 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
     lastReadDate,
     readingProgressChapter,
     readingProgressOffset,
+    voiceId,
+    playbackSpeed,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -195,6 +219,21 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
         ),
       );
     }
+    if (data.containsKey('voice_id')) {
+      context.handle(
+        _voiceIdMeta,
+        voiceId.isAcceptableOrUnknown(data['voice_id']!, _voiceIdMeta),
+      );
+    }
+    if (data.containsKey('playback_speed')) {
+      context.handle(
+        _playbackSpeedMeta,
+        playbackSpeed.isAcceptableOrUnknown(
+          data['playback_speed']!,
+          _playbackSpeedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -240,6 +279,14 @@ class $BooksTable extends Books with TableInfo<$BooksTable, Book> {
         DriftSqlType.double,
         data['${effectivePrefix}reading_progress_offset'],
       ),
+      voiceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}voice_id'],
+      ),
+      playbackSpeed: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}playback_speed'],
+      ),
     );
   }
 
@@ -259,6 +306,15 @@ class Book extends DataClass implements Insertable<Book> {
   final DateTime? lastReadDate;
   final int? readingProgressChapter;
   final double? readingProgressOffset;
+
+  /// Per-book voice override (D-09 / CD-01). NULL = fall back to the
+  /// shared_preferences global default. Value is a [ModelManifest] voiceId
+  /// string (e.g. 'af_bella'), NOT the positional sherpa sid.
+  final String? voiceId;
+
+  /// Per-book playback-speed override (PBK-04). NULL = use global default.
+  /// Range clamping is a UI concern — migration stays additive and schema-only.
+  final double? playbackSpeed;
   const Book({
     required this.id,
     required this.title,
@@ -269,6 +325,8 @@ class Book extends DataClass implements Insertable<Book> {
     this.lastReadDate,
     this.readingProgressChapter,
     this.readingProgressOffset,
+    this.voiceId,
+    this.playbackSpeed,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -291,6 +349,12 @@ class Book extends DataClass implements Insertable<Book> {
     }
     if (!nullToAbsent || readingProgressOffset != null) {
       map['reading_progress_offset'] = Variable<double>(readingProgressOffset);
+    }
+    if (!nullToAbsent || voiceId != null) {
+      map['voice_id'] = Variable<String>(voiceId);
+    }
+    if (!nullToAbsent || playbackSpeed != null) {
+      map['playback_speed'] = Variable<double>(playbackSpeed);
     }
     return map;
   }
@@ -316,6 +380,12 @@ class Book extends DataClass implements Insertable<Book> {
       readingProgressOffset: readingProgressOffset == null && nullToAbsent
           ? const Value.absent()
           : Value(readingProgressOffset),
+      voiceId: voiceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voiceId),
+      playbackSpeed: playbackSpeed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(playbackSpeed),
     );
   }
 
@@ -338,6 +408,8 @@ class Book extends DataClass implements Insertable<Book> {
       readingProgressOffset: serializer.fromJson<double?>(
         json['readingProgressOffset'],
       ),
+      voiceId: serializer.fromJson<String?>(json['voiceId']),
+      playbackSpeed: serializer.fromJson<double?>(json['playbackSpeed']),
     );
   }
   @override
@@ -355,6 +427,8 @@ class Book extends DataClass implements Insertable<Book> {
       'readingProgressOffset': serializer.toJson<double?>(
         readingProgressOffset,
       ),
+      'voiceId': serializer.toJson<String?>(voiceId),
+      'playbackSpeed': serializer.toJson<double?>(playbackSpeed),
     };
   }
 
@@ -368,6 +442,8 @@ class Book extends DataClass implements Insertable<Book> {
     Value<DateTime?> lastReadDate = const Value.absent(),
     Value<int?> readingProgressChapter = const Value.absent(),
     Value<double?> readingProgressOffset = const Value.absent(),
+    Value<String?> voiceId = const Value.absent(),
+    Value<double?> playbackSpeed = const Value.absent(),
   }) => Book(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -382,6 +458,10 @@ class Book extends DataClass implements Insertable<Book> {
     readingProgressOffset: readingProgressOffset.present
         ? readingProgressOffset.value
         : this.readingProgressOffset,
+    voiceId: voiceId.present ? voiceId.value : this.voiceId,
+    playbackSpeed: playbackSpeed.present
+        ? playbackSpeed.value
+        : this.playbackSpeed,
   );
   Book copyWithCompanion(BooksCompanion data) {
     return Book(
@@ -402,6 +482,10 @@ class Book extends DataClass implements Insertable<Book> {
       readingProgressOffset: data.readingProgressOffset.present
           ? data.readingProgressOffset.value
           : this.readingProgressOffset,
+      voiceId: data.voiceId.present ? data.voiceId.value : this.voiceId,
+      playbackSpeed: data.playbackSpeed.present
+          ? data.playbackSpeed.value
+          : this.playbackSpeed,
     );
   }
 
@@ -416,7 +500,9 @@ class Book extends DataClass implements Insertable<Book> {
           ..write('importDate: $importDate, ')
           ..write('lastReadDate: $lastReadDate, ')
           ..write('readingProgressChapter: $readingProgressChapter, ')
-          ..write('readingProgressOffset: $readingProgressOffset')
+          ..write('readingProgressOffset: $readingProgressOffset, ')
+          ..write('voiceId: $voiceId, ')
+          ..write('playbackSpeed: $playbackSpeed')
           ..write(')'))
         .toString();
   }
@@ -432,6 +518,8 @@ class Book extends DataClass implements Insertable<Book> {
     lastReadDate,
     readingProgressChapter,
     readingProgressOffset,
+    voiceId,
+    playbackSpeed,
   );
   @override
   bool operator ==(Object other) =>
@@ -445,7 +533,9 @@ class Book extends DataClass implements Insertable<Book> {
           other.importDate == this.importDate &&
           other.lastReadDate == this.lastReadDate &&
           other.readingProgressChapter == this.readingProgressChapter &&
-          other.readingProgressOffset == this.readingProgressOffset);
+          other.readingProgressOffset == this.readingProgressOffset &&
+          other.voiceId == this.voiceId &&
+          other.playbackSpeed == this.playbackSpeed);
 }
 
 class BooksCompanion extends UpdateCompanion<Book> {
@@ -458,6 +548,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
   final Value<DateTime?> lastReadDate;
   final Value<int?> readingProgressChapter;
   final Value<double?> readingProgressOffset;
+  final Value<String?> voiceId;
+  final Value<double?> playbackSpeed;
   const BooksCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -468,6 +560,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
     this.lastReadDate = const Value.absent(),
     this.readingProgressChapter = const Value.absent(),
     this.readingProgressOffset = const Value.absent(),
+    this.voiceId = const Value.absent(),
+    this.playbackSpeed = const Value.absent(),
   });
   BooksCompanion.insert({
     this.id = const Value.absent(),
@@ -479,6 +573,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
     this.lastReadDate = const Value.absent(),
     this.readingProgressChapter = const Value.absent(),
     this.readingProgressOffset = const Value.absent(),
+    this.voiceId = const Value.absent(),
+    this.playbackSpeed = const Value.absent(),
   }) : title = Value(title),
        filePath = Value(filePath),
        importDate = Value(importDate);
@@ -492,6 +588,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
     Expression<DateTime>? lastReadDate,
     Expression<int>? readingProgressChapter,
     Expression<double>? readingProgressOffset,
+    Expression<String>? voiceId,
+    Expression<double>? playbackSpeed,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -505,6 +603,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
         'reading_progress_chapter': readingProgressChapter,
       if (readingProgressOffset != null)
         'reading_progress_offset': readingProgressOffset,
+      if (voiceId != null) 'voice_id': voiceId,
+      if (playbackSpeed != null) 'playback_speed': playbackSpeed,
     });
   }
 
@@ -518,6 +618,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
     Value<DateTime?>? lastReadDate,
     Value<int?>? readingProgressChapter,
     Value<double?>? readingProgressOffset,
+    Value<String?>? voiceId,
+    Value<double?>? playbackSpeed,
   }) {
     return BooksCompanion(
       id: id ?? this.id,
@@ -531,6 +633,8 @@ class BooksCompanion extends UpdateCompanion<Book> {
           readingProgressChapter ?? this.readingProgressChapter,
       readingProgressOffset:
           readingProgressOffset ?? this.readingProgressOffset,
+      voiceId: voiceId ?? this.voiceId,
+      playbackSpeed: playbackSpeed ?? this.playbackSpeed,
     );
   }
 
@@ -568,6 +672,12 @@ class BooksCompanion extends UpdateCompanion<Book> {
         readingProgressOffset.value,
       );
     }
+    if (voiceId.present) {
+      map['voice_id'] = Variable<String>(voiceId.value);
+    }
+    if (playbackSpeed.present) {
+      map['playback_speed'] = Variable<double>(playbackSpeed.value);
+    }
     return map;
   }
 
@@ -582,7 +692,9 @@ class BooksCompanion extends UpdateCompanion<Book> {
           ..write('importDate: $importDate, ')
           ..write('lastReadDate: $lastReadDate, ')
           ..write('readingProgressChapter: $readingProgressChapter, ')
-          ..write('readingProgressOffset: $readingProgressOffset')
+          ..write('readingProgressOffset: $readingProgressOffset, ')
+          ..write('voiceId: $voiceId, ')
+          ..write('playbackSpeed: $playbackSpeed')
           ..write(')'))
         .toString();
   }
@@ -976,6 +1088,8 @@ typedef $$BooksTableCreateCompanionBuilder =
       Value<DateTime?> lastReadDate,
       Value<int?> readingProgressChapter,
       Value<double?> readingProgressOffset,
+      Value<String?> voiceId,
+      Value<double?> playbackSpeed,
     });
 typedef $$BooksTableUpdateCompanionBuilder =
     BooksCompanion Function({
@@ -988,6 +1102,8 @@ typedef $$BooksTableUpdateCompanionBuilder =
       Value<DateTime?> lastReadDate,
       Value<int?> readingProgressChapter,
       Value<double?> readingProgressOffset,
+      Value<String?> voiceId,
+      Value<double?> playbackSpeed,
     });
 
 final class $$BooksTableReferences
@@ -1064,6 +1180,16 @@ class $$BooksTableFilterComposer extends Composer<_$AppDatabase, $BooksTable> {
 
   ColumnFilters<double> get readingProgressOffset => $composableBuilder(
     column: $table.readingProgressOffset,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get voiceId => $composableBuilder(
+    column: $table.voiceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get playbackSpeed => $composableBuilder(
+    column: $table.playbackSpeed,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1146,6 +1272,16 @@ class $$BooksTableOrderingComposer
     column: $table.readingProgressOffset,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get voiceId => $composableBuilder(
+    column: $table.voiceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get playbackSpeed => $composableBuilder(
+    column: $table.playbackSpeed,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BooksTableAnnotationComposer
@@ -1189,6 +1325,14 @@ class $$BooksTableAnnotationComposer
 
   GeneratedColumn<double> get readingProgressOffset => $composableBuilder(
     column: $table.readingProgressOffset,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get voiceId =>
+      $composableBuilder(column: $table.voiceId, builder: (column) => column);
+
+  GeneratedColumn<double> get playbackSpeed => $composableBuilder(
+    column: $table.playbackSpeed,
     builder: (column) => column,
   );
 
@@ -1255,6 +1399,8 @@ class $$BooksTableTableManager
                 Value<DateTime?> lastReadDate = const Value.absent(),
                 Value<int?> readingProgressChapter = const Value.absent(),
                 Value<double?> readingProgressOffset = const Value.absent(),
+                Value<String?> voiceId = const Value.absent(),
+                Value<double?> playbackSpeed = const Value.absent(),
               }) => BooksCompanion(
                 id: id,
                 title: title,
@@ -1265,6 +1411,8 @@ class $$BooksTableTableManager
                 lastReadDate: lastReadDate,
                 readingProgressChapter: readingProgressChapter,
                 readingProgressOffset: readingProgressOffset,
+                voiceId: voiceId,
+                playbackSpeed: playbackSpeed,
               ),
           createCompanionCallback:
               ({
@@ -1277,6 +1425,8 @@ class $$BooksTableTableManager
                 Value<DateTime?> lastReadDate = const Value.absent(),
                 Value<int?> readingProgressChapter = const Value.absent(),
                 Value<double?> readingProgressOffset = const Value.absent(),
+                Value<String?> voiceId = const Value.absent(),
+                Value<double?> playbackSpeed = const Value.absent(),
               }) => BooksCompanion.insert(
                 id: id,
                 title: title,
@@ -1287,6 +1437,8 @@ class $$BooksTableTableManager
                 lastReadDate: lastReadDate,
                 readingProgressChapter: readingProgressChapter,
                 readingProgressOffset: readingProgressOffset,
+                voiceId: voiceId,
+                playbackSpeed: playbackSpeed,
               ),
           withReferenceMapper: (p0) => p0
               .map(

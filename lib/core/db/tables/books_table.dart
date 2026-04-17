@@ -31,4 +31,13 @@ class Books extends Table {
   DateTimeColumn get lastReadDate => dateTime().nullable()();
   IntColumn get readingProgressChapter => integer().nullable()();
   RealColumn get readingProgressOffset => real().nullable()();
+
+  /// Per-book voice override (D-09 / CD-01). NULL = fall back to the
+  /// shared_preferences global default. Value is a [ModelManifest] voiceId
+  /// string (e.g. 'af_bella'), NOT the positional sherpa sid.
+  TextColumn get voiceId => text().named('voice_id').nullable()();
+
+  /// Per-book playback-speed override (PBK-04). NULL = use global default.
+  /// Range clamping is a UI concern — migration stays additive and schema-only.
+  RealColumn get playbackSpeed => real().named('playback_speed').nullable()();
 }

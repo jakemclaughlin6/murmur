@@ -83,6 +83,22 @@ class Books extends Table with TableInfo {
         requiredDuringInsert: false,
         $customConstraints: 'NULL',
       );
+  late final GeneratedColumn<String> voiceId = GeneratedColumn<String>(
+    'voice_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<double> playbackSpeed = GeneratedColumn<double>(
+    'playback_speed',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -94,6 +110,8 @@ class Books extends Table with TableInfo {
     lastReadDate,
     readingProgressChapter,
     readingProgressOffset,
+    voiceId,
+    playbackSpeed,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -191,8 +209,8 @@ class Chapters extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class DatabaseAtV2 extends GeneratedDatabase {
-  DatabaseAtV2(QueryExecutor e) : super(e);
+class DatabaseAtV3 extends GeneratedDatabase {
+  DatabaseAtV3(QueryExecutor e) : super(e);
   late final Books books = Books(this);
   late final Chapters chapters = Chapters(this);
   @override
@@ -211,5 +229,5 @@ class DatabaseAtV2 extends GeneratedDatabase {
     ),
   ]);
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 }
