@@ -51,7 +51,7 @@ class ModelInstaller {
 
     try {
       for (final entry in decoded.files) {
-        if (!entry.isFile) continue;
+        if (!entry.isFile || entry.isSymbolicLink) continue;
         final name = entry.name;
         if (name.contains('..') ||
             name.startsWith('/') ||
