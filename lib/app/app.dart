@@ -5,6 +5,8 @@ import '../core/theme/app_theme.dart';
 import '../core/theme/murmur_theme_mode.dart';
 import '../core/theme/theme_mode_provider.dart';
 import '../features/library/share_intent_listener.dart';
+import '../features/tts/providers/model_status_provider.dart';
+import '../features/tts/ui/model_download_modal.dart';
 import 'router.dart';
 
 class MurmurApp extends ConsumerWidget {
@@ -35,6 +37,10 @@ class MurmurApp extends ConsumerWidget {
       darkTheme: _darkVariantFor(mode),
       themeMode: mode.platformMode,
       routerConfig: router,
+      // Phase 6 onboarding absorbs this launch gate. Keep the modal factored
+      // so it can be embedded inside the broader ONB-01 flow.
+      builder: (context, child) =>
+          _LaunchGate(child: child ?? const SizedBox()),
     );
   }
 
@@ -51,4 +57,21 @@ class MurmurApp extends ConsumerWidget {
         MurmurThemeMode.oled => buildOledTheme(),
         _ => buildDarkTheme(),
       };
+}
+
+class _LaunchGate extends ConsumerWidget {
+  const _LaunchGate({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(modelStatusProvider);
+    return async.when(
+      loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator())),
+      error: (e, _) =>
+          Scaffold(body: Center(child: Text('Startup error: $e'))),
+      data: (s) => s.installed ? child : const ModelDownloadModal(),
+    );
+  }
 }
