@@ -15,7 +15,7 @@ class ModelManifest {
 
   /// SHA-256 of the tar.bz2 archive. Task 8 replaces this placeholder
   /// with the captured lowercase-hex digest.
-  static const String archiveSha256 = 'PENDING_04_02';
+  static const String archiveSha256 = 'c9f0dd393615805b0bab050c340834d5e684e732aec91c0e860cd30e982c08bd';
 
   /// Verified via HEAD request to the GitHub release asset.
   static const int archiveBytes = 103248205;
