@@ -18,6 +18,12 @@ void main() {
         await target.delete(recursive: true);
       }
 
+      addTearDown(() async {
+        if (await target.exists()) {
+          await target.delete(recursive: true);
+        }
+      });
+
       final resolved = await copyKokoroAssetsToSupportDir();
       expect(resolved, equals(target.path));
       expect(File(p.join(target.path, 'voices.bin')).existsSync(), isTrue);

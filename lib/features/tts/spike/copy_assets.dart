@@ -1,3 +1,8 @@
+// Spike-only: this file is scaffolding for Wave 0 on-device verification and
+// will be rewritten in Wave 1. Before promoting this logic to production,
+// replace `rootBundle.loadString('AssetManifest.json')` with the typed
+// `AssetManifest.loadFromAssetBundle(rootBundle)` API (Flutter 3.7+). The
+// JSON form is a soft-deprecated compat path.
 import 'dart:convert';
 import 'dart:io';
 
