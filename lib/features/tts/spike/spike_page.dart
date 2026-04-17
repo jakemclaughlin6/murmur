@@ -1,4 +1,3 @@
-import 'dart:convert' show ascii;
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
@@ -10,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
+import 'package:murmur/features/tts/audio/wav_wrap.dart';
 import 'package:murmur/features/tts/model/model_assets.dart';
 
 /// Debug-only spike page. Proves end-to-end Kokoro → just_audio on device.
@@ -108,46 +108,6 @@ class _SpikePageState extends State<SpikePage> {
     return sherpa.OfflineTts(sherpa.OfflineTtsConfig(model: modelConfig));
   }
 
-  Uint8List _wrapPcmAsWav(Float32List pcm, int sampleRate) {
-    // 44-byte PCM WAV header (mono, 16-bit). Float32 samples are clamped to
-    // [-1.0, 1.0] and converted to int16 little-endian.
-    final int16 = Int16List(pcm.length);
-    for (var i = 0; i < pcm.length; i++) {
-      var s = pcm[i];
-      if (s > 1.0) s = 1.0;
-      if (s < -1.0) s = -1.0;
-      int16[i] = (s * 32767).toInt();
-    }
-    final dataBytes = int16.buffer.asUint8List();
-    final totalLen = 36 + dataBytes.length;
-    final header = BytesBuilder();
-    header.add(ascii.encode('RIFF'));
-    header.add(_u32le(totalLen));
-    header.add(ascii.encode('WAVE'));
-    header.add(ascii.encode('fmt '));
-    header.add(_u32le(16)); // PCM chunk size
-    header.add(_u16le(1)); // PCM format
-    header.add(_u16le(1)); // mono
-    header.add(_u32le(sampleRate));
-    header.add(_u32le(sampleRate * 2)); // byte rate: sr * channels * bytes/sample
-    header.add(_u16le(2)); // block align
-    header.add(_u16le(16)); // bits per sample
-    header.add(ascii.encode('data'));
-    header.add(_u32le(dataBytes.length));
-    header.add(dataBytes);
-    return header.toBytes();
-  }
-
-  Uint8List _u32le(int v) => Uint8List(4)
-    ..[0] = v & 0xff
-    ..[1] = (v >> 8) & 0xff
-    ..[2] = (v >> 16) & 0xff
-    ..[3] = (v >> 24) & 0xff;
-
-  Uint8List _u16le(int v) => Uint8List(2)
-    ..[0] = v & 0xff
-    ..[1] = (v >> 8) & 0xff;
-
   Future<void> _synthAndPlay() async {
     if (_modelPath.isEmpty) {
       _setStatus('pick model first');
@@ -164,7 +124,7 @@ class _SpikePageState extends State<SpikePage> {
           text: 'Welcome to murmur. This is how I sound reading your books.',
           config: const sherpa.OfflineTtsGenerationConfig(sid: 1, speed: 1.0),
         );
-        wav = _wrapPcmAsWav(audio.samples, audio.sampleRate);
+        wav = wavWrap(audio.samples, sampleRate: audio.sampleRate);
         tmp = File(
           p.join((await getTemporaryDirectory()).path, 'spike.wav'),
         );
