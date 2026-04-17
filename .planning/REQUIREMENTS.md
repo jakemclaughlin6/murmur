@@ -61,7 +61,7 @@ Reading experience with sentence-span rendering baked in from day one.
 
 On-device Kokoro-82M synthesis with sentence-level control and pre-buffering.
 
-- [ ] **TTS-01**: On first launch, user sees a one-time "Download voice model (~80MB)" prompt with a Wi-Fi-only toggle that defaults to ON
+- [ ] **TTS-01**: On first launch, user sees a one-time "Download voice model (~80MB)" prompt with a "Prefer Wi-Fi" honor-system toggle that defaults to ON — the app does not enforce network type
 - [ ] **TTS-02**: Model download fetches `model.int8.onnx` from a pinned URL, verifies its SHA-256, and stores it under app documents
 - [ ] **TTS-03**: `voices.bin`, `tokens.txt`, and `espeak-ng-data/` are bundled with the app (no network fetch)
 - [ ] **TTS-04**: If the model download fails or is interrupted, the user sees a recoverable retry flow; partial files are cleaned up
@@ -103,7 +103,7 @@ Global configuration surface.
 
 First-launch experience.
 
-- [ ] **ONB-01**: First-launch flow walks the user through model download (with Wi-Fi-only toggle) and importing their first EPUB
+- [ ] **ONB-01**: First-launch flow walks the user through model download (with "Prefer Wi-Fi" honor-system toggle) and importing their first EPUB
 - [ ] **ONB-02**: After onboarding, the library opens in its empty state with a clear "Import your first book" CTA if no book was imported
 
 ### Quality & Distribution
