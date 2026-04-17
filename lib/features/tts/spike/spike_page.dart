@@ -27,6 +27,7 @@ class _SpikePageState extends State<SpikePage> {
   String _modelPath = '';
   String _cancelProbeOutput = '';
   final _player = AudioPlayer();
+  bool _bindingsReady = false;
 
   @override
   void dispose() {
@@ -36,15 +37,23 @@ class _SpikePageState extends State<SpikePage> {
 
   void _setStatus(String s) => setState(() => _status = s);
 
+  void _ensureBindings() {
+    if (_bindingsReady) return;
+    sherpa.initBindings();
+    _bindingsReady = true;
+  }
+
   Future<void> _copyAssets() async {
     _setStatus('copying assets...');
     try {
       final dir = await copyKokoroAssetsToSupportDir();
+      if (!mounted) return;
       setState(() {
         _kokoroDir = dir;
         _status = 'assets copied to $dir';
       });
     } catch (e) {
+      if (!mounted) return;
       _setStatus('asset copy error: $e');
     }
   }
@@ -58,11 +67,14 @@ class _SpikePageState extends State<SpikePage> {
       type: FileType.any,
       allowMultiple: false,
     );
+    if (!mounted) return;
     if (picked == null || picked.files.isEmpty) return;
     final src = File(picked.files.single.path!);
     final dest = File(p.join(_kokoroDir, 'model.int8.onnx'));
     await src.copy(dest.path);
+    if (!mounted) return;
     final destLen = await dest.length();
+    if (!mounted) return;
     setState(() {
       _modelPath = dest.path;
       _status = 'model placed at ${dest.path} ($destLen bytes)';
@@ -141,22 +153,30 @@ class _SpikePageState extends State<SpikePage> {
     }
     _setStatus('synthesizing...');
     try {
-      sherpa.initBindings();
+      _ensureBindings();
       final tts = _buildTts();
-      final audio = tts.generateWithConfig(
-        text: 'Welcome to murmur. This is how I sound reading your books.',
-        config: const sherpa.OfflineTtsGenerationConfig(sid: 1, speed: 1.0),
-      );
-      final wav = _wrapPcmAsWav(audio.samples, audio.sampleRate);
-      final tmp = File(
-        p.join((await getTemporaryDirectory()).path, 'spike.wav'),
-      );
-      await tmp.writeAsBytes(wav);
-      tts.free();
+      File tmp;
+      Uint8List wav;
+      try {
+        final audio = tts.generateWithConfig(
+          text: 'Welcome to murmur. This is how I sound reading your books.',
+          config: const sherpa.OfflineTtsGenerationConfig(sid: 1, speed: 1.0),
+        );
+        wav = _wrapPcmAsWav(audio.samples, audio.sampleRate);
+        tmp = File(
+          p.join((await getTemporaryDirectory()).path, 'spike.wav'),
+        );
+        await tmp.writeAsBytes(wav);
+      } finally {
+        tts.free();
+      }
+      if (!mounted) return;
       _setStatus('playing ${tmp.path} (${wav.length} bytes)');
       await _player.setAudioSource(AudioSource.file(tmp.path));
+      if (!mounted) return;
       await _player.play();
     } catch (e, st) {
+      if (!mounted) return;
       _setStatus('synth error: $e\n$st');
     }
   }
@@ -182,6 +202,7 @@ class _SpikePageState extends State<SpikePage> {
       final fut = Isolate.run(() async {
         // initBindings must be called per-isolate: each isolate has its own
         // binding state and native library handle.
+        // Isolates have independent native binding state; safe to call once here.
         sherpa.initBindings();
         final tts = _buildTtsFromPaths(kokoroDir, modelPath);
         final audio = tts.generateWithConfig(
@@ -196,6 +217,7 @@ class _SpikePageState extends State<SpikePage> {
         return audio.samples.length;
       });
 
+      // Ceremonial pause — the probe's conclusion is structural (no cancel API exists), not race-dependent.
       await Future<void>.delayed(const Duration(milliseconds: 50));
       // There is no `cancel()` on OfflineTts or OfflineTtsConfig in 1.12.36.
       // Disposing the running engine mid-generate is not exposed through the
@@ -209,6 +231,7 @@ class _SpikePageState extends State<SpikePage> {
     } catch (e) {
       result.writeln('Probe error: $e');
     }
+    if (!mounted) return;
     setState(() {
       _cancelProbeOutput = result.toString();
       _status = 'cancel probe done';
