@@ -13,7 +13,7 @@ murmur ships in seven phases from a signed, compliance-ready scaffold (Phase 1) 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Scaffold & Compliance Foundation** - Signed app scaffold with routing, DB, themes, and all store-compliance groundwork (completed 2026-04-11)
-- [ ] **Phase 2: Library & EPUB Import** - Import EPUBs, parse them into a rich block IR, browse in a responsive grid
+- [x] **Phase 2: Library & EPUB Import** - Import EPUBs, parse them into a rich block IR, browse in a responsive grid
 - [x] **Phase 3: Reader with Sentence-Span Architecture** - Read any EPUB on phone or tablet with per-sentence TextSpan rendering from day one (completed 2026-04-12)
 - [ ] **Phase 4: TTS Engine & Playback Foundation** - Kokoro-82M on a worker isolate plays any chapter with background audio and lock-screen controls
 - [ ] **Phase 5: Sentence Highlighting & Two-Way Sync** - The currently-spoken sentence is highlighted and kept in view; tap a sentence to start TTS there

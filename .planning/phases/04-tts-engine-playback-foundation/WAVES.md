@@ -79,9 +79,10 @@
 
 ## Wave 3 — Queue + just_audio player
 
-**Status:** BLOCKED (on Wave 2 main.dart cache wiring)
+**Status:** PLANNED (2026-04-17)
 **Legacy spec:** `04-06-PLAN.md`
-**Requirements covered:** TTS-05, TTS-07, TTS-08, TTS-10
+**Current plan:** `PLAN.md` (this directory) — 10 checkbox-driven tasks
+**Requirements covered:** TTS-05, TTS-07, TTS-08, TTS-09, TTS-10
 
 **Scope preview:**
 - `lib/features/tts/queue/just_audio_player.dart` — `AudioPlayerHandle` wrapping `AudioSource.file` (no `StreamAudioSource`, TTS-08)
