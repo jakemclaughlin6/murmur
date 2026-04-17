@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Phase 4: one-time Kokoro model download on first launch. After that,
+         airplane mode is a supported operating state. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- FND-08: TTS foreground service permissions (declared now, used in Phase 4).
          Phase 1 declares them but does NOT request runtime permissions or start the
          service — that's Phase 4 scope. -->
