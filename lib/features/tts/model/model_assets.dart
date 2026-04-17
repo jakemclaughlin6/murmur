@@ -17,7 +17,8 @@ class KokoroAssetCopyException implements Exception {
 }
 
 /// Copies every `assets/kokoro/**` asset from [bundle] (defaults to
-/// [rootBundle]) into `supportDir/kokoro-en-v0_19/`, preserving layout.
+/// [rootBundle]) into the [KokoroPaths] root directory under [supportDir],
+/// preserving layout.
 ///
 /// Idempotent: files whose byte length already matches are skipped.
 ///

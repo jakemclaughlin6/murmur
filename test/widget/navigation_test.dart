@@ -10,6 +10,7 @@ import 'package:murmur/core/db/app_database.dart';
 import 'package:murmur/core/db/app_database_provider.dart';
 import 'package:murmur/features/library/library_provider.dart';
 import 'package:murmur/features/library/share_intent_listener.dart';
+import 'package:murmur/features/tts/providers/model_status_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late Directory _tempDocs;
@@ -44,6 +45,17 @@ class _StubLibraryNotifier extends LibraryNotifier {
       );
 }
 
+/// Model-status stub that reports the model as already installed so the
+/// _LaunchGate passes through to the app shell. Without this override the
+/// gate renders ModelDownloadModal, which has an indeterminate
+/// LinearProgressIndicator that animates forever and causes pumpAndSettle
+/// to time out.
+class _InstalledModelStatusNotifier extends ModelStatusNotifier {
+  @override
+  Future<ModelStatus> build() async =>
+      const ModelStatus(installed: true);
+}
+
 /// Builds a ProviderScope configured for widget tests that load
 /// [MurmurApp]. LibraryScreen watches `libraryProvider`, which walks
 /// `db.select(db.books).watch()` — so without overriding
@@ -56,6 +68,7 @@ Widget _app() => ProviderScope(
         shareIntentSourceProvider.overrideWithValue(
           const _NoopShareIntentSource(),
         ),
+        modelStatusProvider.overrideWith(_InstalledModelStatusNotifier.new),
       ],
       child: const MurmurApp(),
     );

@@ -35,9 +35,10 @@
 
 ## Wave 1 — Model + WAV + Splitter hardening
 
-**Status:** READY (Wave 0 signed off)
-**Legacy specs:** `04-01-PLAN.md`, `04-02-PLAN.md`, `04-03-PLAN.md`
-**Current plan:** not yet written — convert after Wave 0 signs off
+**Status:** COMPLETE (2026-04-17)
+**Legacy specs:** `04-01-PLAN.md`, `04-02-PLAN.md`, `04-03-PLAN.md` (consolidated into `PLAN.md`)
+**Current plan:** `PLAN.md` (this directory) — 10 checkbox-driven tasks
+**Summary:** `04-01-SUMMARY.md`
 **Requirements covered:** TTS-01, TTS-02, TTS-03, TTS-04, TTS-06, TTS-08, PBK-04 (prep)
 
 **Scope preview (do not implement until Wave 0 passes):**

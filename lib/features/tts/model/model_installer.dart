@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model_manifest.dart';
+import 'paths.dart';
 
 enum ModelInstallReason {
   pathTraversal,
@@ -71,7 +72,7 @@ class ModelInstaller {
       }
 
       final stagedModel =
-          File(p.join(stagingDir.path, 'kokoro-en-v0_19', 'model.int8.onnx'));
+          File(KokoroPaths.forSupportDir(stagingDir.path).modelFile);
       if (!stagedModel.existsSync()) {
         throw ModelInstallException(ModelInstallReason.archiveCorrupt,
             'model.int8.onnx not found inside archive');

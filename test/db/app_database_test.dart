@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:murmur/core/db/app_database.dart';
 
 void main() {
-  group('AppDatabase — v2 schema (D-04, D-05, D-03)', () {
+  group('AppDatabase — v3 schema (D-04, D-05, D-03, CD-01)', () {
     late AppDatabase db;
 
     setUp(() {
@@ -14,8 +14,8 @@ void main() {
       await db.close();
     });
 
-    test('schemaVersion is 2', () {
-      expect(db.schemaVersion, 2);
+    test('schemaVersion is 3', () {
+      expect(db.schemaVersion, 3);
     });
 
     test('has books and chapters user tables (D-04, D-05, D-03)', () async {
@@ -34,11 +34,11 @@ void main() {
       expect(
         tableNames,
         containsAll(<String>['books', 'chapters']),
-        reason: 'Phase 2 schema v2 must create both user tables via onCreate',
+        reason: 'schema must create both user tables via onCreate',
       );
     });
 
-    test('close() succeeds on a freshly-created v2 database', () async {
+    test('close() succeeds on a freshly-created v3 database', () async {
       final freshDb = AppDatabase(NativeDatabase.memory());
       await freshDb.close();
     });
