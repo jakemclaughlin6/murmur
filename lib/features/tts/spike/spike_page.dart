@@ -10,7 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
-import 'copy_assets.dart';
+import 'package:murmur/features/tts/model/model_assets.dart';
 
 /// Debug-only spike page. Proves end-to-end Kokoro → just_audio on device.
 /// Route is only mounted under `kDebugMode`; see router.dart.
@@ -46,11 +46,13 @@ class _SpikePageState extends State<SpikePage> {
   Future<void> _copyAssets() async {
     _setStatus('copying assets...');
     try {
-      final dir = await copyKokoroAssetsToSupportDir();
+      final support = await getApplicationSupportDirectory();
+      final paths = await copyBundledKokoroAssets(support);
+      final targetRoot = paths.rootDir;
       if (!mounted) return;
       setState(() {
-        _kokoroDir = dir;
-        _status = 'assets copied to $dir';
+        _kokoroDir = targetRoot;
+        _status = 'assets copied to $targetRoot';
       });
     } catch (e) {
       if (!mounted) return;
