@@ -101,4 +101,49 @@ void main() {
     expect(player.setFilePaths.last, endsWith('/0/1.wav'));
     expect(h.engine.generateCallCount, 3); // 0, 1, 2
   });
+
+  test('skipForward during inflight synth discards result wav', () async {
+    final h = await _mkClient(synthDelay: const Duration(milliseconds: 100));
+    final player = FakeAudioPlayerHandle();
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: (_) {});
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
+      Sentence('A.'), Sentence('B.'), Sentence('C.'),
+    ]);
+    final p = queue.play(0);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    queue.skipForward();
+    await p.catchError((_) {});
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    expect(File(h.cache.pathFor('b1', 0, 0)).existsSync(), isFalse,
+        reason: 'cancelled synth wav must be deleted');
+  });
+
+  test('skipBackward within ring buffer replays without new synth', () async {
+    final h = await _mkClient();
+    final player = FakeAudioPlayerHandle();
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: (_) {});
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
+      Sentence('A.'), Sentence('B.'), Sentence('C.'), Sentence('D.'),
+    ]);
+    await queue.play(0);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    player.simulateCompleted();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    final before = h.engine.generateCallCount;
+    await queue.skipBackward();
+    expect(h.engine.generateCallCount, before);
+    expect(player.setFilePaths.last, endsWith('/0/0.wav'));
+  });
 }

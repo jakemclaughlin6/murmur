@@ -8,6 +8,11 @@ import 'package:murmur/features/tts/isolate/tts_client.dart';
 import 'package:murmur/features/tts/model/model_manifest.dart';
 import 'package:murmur/features/tts/queue/just_audio_player.dart';
 
+/// Thrown into a pending [Completer] when [TtsQueue.skipForward] cancels it.
+class _SkipCancelled {
+  const _SkipCancelled();
+}
+
 /// Orchestrator: TtsClient + TtsCache + AudioPlayerHandle.
 /// Driven by `ttsQueueProvider`; the reader calls `setChapter(...)`
 /// on chapter load.
@@ -120,6 +125,29 @@ class TtsQueue {
     if (next >= _sentences.length) return;
     _currentIdx = next;
     unawaited(_playIdx(next).then((_) => _requestSynth(next + 1)));
+  }
+
+  void skipForward() {
+    if (_bookId == null) return;
+    final inflight = _currentIdx;
+    if (_awaiting.containsKey(inflight)) {
+      client.send(Cancel(inflight));
+      final c = _awaiting.remove(inflight)!;
+      if (!c.isCompleted) c.completeError(const _SkipCancelled());
+    }
+    final next = _currentIdx + 1;
+    if (next >= _sentences.length) return;
+    _currentIdx = next;
+    unawaited(_playIdx(next).then((_) => _requestSynth(next + 1)));
+  }
+
+  Future<void> skipBackward() async {
+    if (_bookId == null) return;
+    final prev = _currentIdx - 1;
+    if (prev < 0) return;
+    _currentIdx = prev;
+    await _playIdx(prev);
+    _requestSynth(prev + 1);
   }
 
   Future<void> dispose() async {
