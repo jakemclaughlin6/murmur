@@ -146,4 +146,64 @@ void main() {
     expect(h.engine.generateCallCount, before);
     expect(player.setFilePaths.last, endsWith('/0/0.wav'));
   });
+
+  test('setSpeed forwards to player; NEVER reaches worker', () async {
+    final h = await _mkClient();
+    final player = FakeAudioPlayerHandle();
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: (_) {});
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    queue.setChapter(bookId: 'b1', chapterIdx: 0,
+        sentences: const [Sentence('A.')]);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    final before = h.engine.generateCallCount;
+    await queue.setSpeed(1.75);
+    expect(player.setSpeedValues, [1.75]);
+    expect(h.engine.generateCallCount, before,
+        reason: 'TTS-09: speed never reaches worker');
+  });
+
+  test('setVoice wipes chapter cache, sends SetVoice, resynths currentIdx',
+      () async {
+    final h = await _mkClient();
+    final player = FakeAudioPlayerHandle();
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: (_) {});
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
+      Sentence('A.'), Sentence('B.'),
+    ]);
+    await queue.play(0);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(File(h.cache.pathFor('b1', 0, 0)).existsSync(), isTrue);
+    await queue.setVoice('af_sarah');
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(h.engine.lastSid, 3); // af_sarah sid = 3
+  });
+
+  test('pause/resume forward to player', () async {
+    final h = await _mkClient();
+    final player = FakeAudioPlayerHandle();
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: (_) {});
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    queue.setChapter(bookId: 'b1', chapterIdx: 0,
+        sentences: const [Sentence('A.')]);
+    await queue.play(0);
+    await queue.pause();
+    await queue.resume();
+    expect(player.calls, containsAll(['pause', 'play']));
+  });
 }

@@ -37,7 +37,7 @@ class TtsQueue {
   String? _bookId;
   int _chapterIdx = 0;
   int _currentIdx = 0;
-  final int _currentVoiceSid =
+  int _currentVoiceSid =
       ModelManifest.byVoiceId(ModelManifest.defaultVoiceId)!.sid;
   List<Sentence> _sentences = const [];
 
@@ -149,6 +149,34 @@ class TtsQueue {
     await _playIdx(prev);
     _requestSynth(prev + 1);
   }
+
+  Future<void> setSpeed(double s) async {
+    await player.setSpeed(s);
+  }
+
+  Future<void> setVoice(String voiceId) async {
+    final entry = ModelManifest.byVoiceId(voiceId);
+    if (entry == null) return;
+    _currentVoiceSid = entry.sid;
+    client.send(SetVoice(entry.sid));
+    if (_bookId != null) {
+      final dir = Directory(
+          '${cache.cacheRoot.path}/${_bookId!}/$_chapterIdx');
+      if (dir.existsSync()) {
+        try { await dir.delete(recursive: true); } catch (_) {/* benign */}
+      }
+      // Just clear the maps — no completeError on pending completers.
+      // setVoice is a user-initiated action; no reader code awaits play()
+      // concurrently with a voice switch. If that ever changes, complete
+      // with _SkipCancelled here for consistency with skipForward.
+      _awaiting.clear();
+      _recent.clear();
+      _requestSynth(_currentIdx);
+    }
+  }
+
+  Future<void> pause() async { await player.pause(); }
+  Future<void> resume() async { await player.play(); }
 
   Future<void> dispose() async {
     if (_disposed) return;
