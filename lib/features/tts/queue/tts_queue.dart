@@ -32,7 +32,7 @@ class TtsQueue {
   String? _bookId;
   int _chapterIdx = 0;
   int _currentIdx = 0;
-  int _currentVoiceSid =
+  final int _currentVoiceSid =
       ModelManifest.byVoiceId(ModelManifest.defaultVoiceId)!.sid;
   List<Sentence> _sentences = const [];
 
@@ -83,8 +83,43 @@ class TtsQueue {
     }
   }
 
+  Future<void> play(int fromIdx) async {
+    if (_bookId == null) return;
+    if (fromIdx < 0 || fromIdx >= _sentences.length) return;
+    _currentIdx = fromIdx;
+    await _playIdx(fromIdx);
+    _requestSynth(fromIdx + 1);
+  }
+
+  Future<void> _playIdx(int idx) async {
+    final path = cache.pathFor(_bookId!, _chapterIdx, idx);
+    String wav;
+    if (File(path).existsSync()) {
+      wav = path;
+    } else {
+      _requestSynth(idx);
+      wav = await _awaiting[idx]!.future;
+    }
+    await player.setFile(wav);
+    await player.play();
+    _rememberRecent(idx);
+    onSentenceStart(idx);
+  }
+
+  void _rememberRecent(int idx) {
+    _recent.remove(idx);
+    _recent.add(idx);
+    while (_recent.length > _ringSize) {
+      _recent.removeAt(0);
+    }
+  }
+
   void _onPlayerCompleted() {
-    // Filled in by Task 5.
+    if (_disposed || _bookId == null) return;
+    final next = _currentIdx + 1;
+    if (next >= _sentences.length) return;
+    _currentIdx = next;
+    unawaited(_playIdx(next).then((_) => _requestSynth(next + 1)));
   }
 
   Future<void> dispose() async {

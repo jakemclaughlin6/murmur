@@ -54,4 +54,51 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 20));
     expect(h.engine.generateCallCount, 1);
   });
+
+  test('play(0) awaits synth, calls setFile+play, pre-synths idx 1', () async {
+    final h = await _mkClient();
+    addTearDown(() async {
+      await h.client.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    final player = FakeAudioPlayerHandle();
+    final started = <int>[];
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: started.add,
+    );
+    queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
+      Sentence('A.'), Sentence('B.'), Sentence('C.'),
+    ]);
+    await queue.play(0);
+    expect(player.calls.take(2).toList(), ['setFile', 'play']);
+    expect(player.setFilePaths.single, endsWith('/0/0.wav'));
+    expect(started, [0]);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(h.engine.generateCallCount, 2);
+  });
+
+  test('player completion advances and pre-synths +2', () async {
+    final h = await _mkClient();
+    addTearDown(() async {
+      await h.client.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
+    final player = FakeAudioPlayerHandle();
+    final started = <int>[];
+    final queue = TtsQueue(
+      client: h.client, cache: h.cache, player: player,
+      onSentenceStart: started.add,
+    );
+    queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
+      Sentence('A.'), Sentence('B.'), Sentence('C.'),
+    ]);
+    await queue.play(0);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    player.simulateCompleted();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(started, [0, 1]);
+    expect(player.setFilePaths.last, endsWith('/0/1.wav'));
+    expect(h.engine.generateCallCount, 3); // 0, 1, 2
+  });
 }
