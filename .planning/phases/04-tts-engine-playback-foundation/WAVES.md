@@ -79,9 +79,10 @@
 
 ## Wave 3 — Queue + just_audio player
 
-**Status:** PLANNED (2026-04-17)
+**Status:** COMPLETE (2026-04-17)
 **Legacy spec:** `04-06-PLAN.md`
 **Current plan:** `PLAN.md` (this directory) — 10 checkbox-driven tasks
+**Summary:** `04-03-SUMMARY.md`
 **Requirements covered:** TTS-05, TTS-07, TTS-08, TTS-09, TTS-10
 
 **Scope preview:**
