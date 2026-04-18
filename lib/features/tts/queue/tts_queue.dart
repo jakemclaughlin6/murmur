@@ -48,6 +48,7 @@ class TtsQueue {
   StreamSubscription<SentenceReady>? _eventSub;
   StreamSubscription<void>? _completedSub;
   bool _disposed = false;
+  Future<void> _pendingCapWork = Future<void>.value();
 
   void setChapter({
     required String bookId,
@@ -84,7 +85,13 @@ class TtsQueue {
     if (_bookId != null) {
       cache.markRecentlyUsed(_bookId!, _chapterIdx, e.sentenceIdx);
       cache.evictLru(_bookId!, _chapterIdx);
-      unawaited(cache.enforceSoftCap(_bookId!));
+      final bookId = _bookId!;
+      _pendingCapWork = _pendingCapWork.then((_) async {
+        if (_disposed) return;
+        try {
+          await cache.enforceSoftCap(bookId);
+        } catch (_) {/* benign — cache dir may have been wiped under test */}
+      });
     }
   }
 
@@ -183,6 +190,7 @@ class TtsQueue {
     _disposed = true;
     await _eventSub?.cancel();
     await _completedSub?.cancel();
+    try { await _pendingCapWork; } catch (_) {/* benign */}
     try {
       await player.pause();
     } catch (_) {/* benign */}

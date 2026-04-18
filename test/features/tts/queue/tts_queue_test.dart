@@ -35,10 +35,6 @@ void main() {
   test('setChapter kicks off SynthSentence for idx 0 (D-11 pre-synth)',
       () async {
     final h = await _mkClient();
-    addTearDown(() async {
-      await h.client.dispose();
-      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
-    });
     final player = FakeAudioPlayerHandle();
     final queue = TtsQueue(
       client: h.client,
@@ -46,6 +42,10 @@ void main() {
       player: player,
       onSentenceStart: (_) {},
     );
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
     queue.setChapter(
       bookId: 'b1',
       chapterIdx: 0,
@@ -57,16 +57,16 @@ void main() {
 
   test('play(0) awaits synth, calls setFile+play, pre-synths idx 1', () async {
     final h = await _mkClient();
-    addTearDown(() async {
-      await h.client.dispose();
-      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
-    });
     final player = FakeAudioPlayerHandle();
     final started = <int>[];
     final queue = TtsQueue(
       client: h.client, cache: h.cache, player: player,
       onSentenceStart: started.add,
     );
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
     queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
       Sentence('A.'), Sentence('B.'), Sentence('C.'),
     ]);
@@ -80,16 +80,16 @@ void main() {
 
   test('player completion advances and pre-synths +2', () async {
     final h = await _mkClient();
-    addTearDown(() async {
-      await h.client.dispose();
-      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
-    });
     final player = FakeAudioPlayerHandle();
     final started = <int>[];
     final queue = TtsQueue(
       client: h.client, cache: h.cache, player: player,
       onSentenceStart: started.add,
     );
+    addTearDown(() async {
+      await queue.dispose();
+      if (h.tmp.existsSync()) h.tmp.deleteSync(recursive: true);
+    });
     queue.setChapter(bookId: 'b1', chapterIdx: 0, sentences: const [
       Sentence('A.'), Sentence('B.'), Sentence('C.'),
     ]);
